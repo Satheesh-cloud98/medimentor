@@ -1,0 +1,465 @@
+{
+  "user-arjun": [
+    {
+      "id": "chat-1791847761501-eqofe",
+      "userId": "user-arjun",
+      "title": "Explain hemoglobin in three simp",
+      "createdAt": "2026-10-12T23:29:21.501Z",
+      "updatedAt": "2026-10-12T23:50:48.259Z",
+      "messages": [
+        {
+          "id": "msg-1791847764349",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentence",
+          "timestamp": "04:59 AM"
+        },
+        {
+          "id": "msg-1791849048244",
+          "role": "user",
+          "content": "xplain hemoglobin in three simple sentences.",
+          "timestamp": "05:20 AM"
+        }
+      ]
+    },
+    {
+      "id": "chat-1791846159685-mhhmj",
+      "userId": "user-arjun",
+      "title": "Explain hemoglobin in three simp",
+      "createdAt": "2026-10-12T23:02:39.685Z",
+      "updatedAt": "2026-10-12T23:29:13.671Z",
+      "messages": [
+        {
+          "id": "msg-1791846167406",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentences.",
+          "timestamp": "04:32 AM"
+        },
+        {
+          "id": "msg-resp-1791846167491",
+          "role": "assistant",
+          "content": "Offline Mode Active:\nI am operating via VerifiHealth's grounded local clinical engine.\n\nYour profile contains **4 clinical documents** (4 synthetic demonstration records; 3 clinically verified, 1 pending verification). All extracted parameters remain securely stored in your local browser sandbox.",
+          "timestamp": "04:32 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Offline Fail-Safe)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "Network unreachable: Failed to fetch. Client-side grounded fallback engaged."
+        },
+        {
+          "id": "msg-1791847675102",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentences.",
+          "timestamp": "04:57 AM"
+        },
+        {
+          "id": "msg-1791847753597",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentence",
+          "timestamp": "04:59 AM"
+        },
+        {
+          "id": "msg-resp-1791847753656",
+          "role": "assistant",
+          "content": "Offline Mode Active:\nI am operating via VerifiHealth's grounded local clinical engine.\n\nYour profile contains **4 clinical documents** (4 synthetic demonstration records; 3 clinically verified, 1 pending verification). All extracted parameters remain securely stored in your local browser sandbox.",
+          "timestamp": "04:59 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Offline Fail-Safe)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "Network unreachable: Failed to fetch. Client-side grounded fallback engaged."
+        }
+      ]
+    },
+    {
+      "id": "chat-1791846110038-id3wf",
+      "userId": "user-arjun",
+      "title": "Explain hemoglobin in three simp",
+      "createdAt": "2026-10-12T23:01:50.038Z",
+      "updatedAt": "2026-10-12T23:02:22.338Z",
+      "messages": [
+        {
+          "id": "msg-1791846142237",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentences.",
+          "timestamp": "04:32 AM"
+        },
+        {
+          "id": "msg-resp-1791846142327",
+          "role": "assistant",
+          "content": "Offline Mode Active:\nI am operating via VerifiHealth's grounded local clinical engine.\n\nYour profile contains **4 clinical documents** (4 synthetic demonstration records; 3 clinically verified, 1 pending verification). All extracted parameters remain securely stored in your local browser sandbox.",
+          "timestamp": "04:32 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Offline Fail-Safe)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "Network unreachable: Failed to fetch. Client-side grounded fallback engaged."
+        }
+      ]
+    },
+    {
+      "id": "chat-1791844585456-82j6d",
+      "userId": "user-arjun",
+      "title": "Explain hemoglobin in two playfu",
+      "createdAt": "2026-10-12T22:36:25.456Z",
+      "updatedAt": "2026-10-12T22:47:42.273Z",
+      "messages": [
+        {
+          "id": "msg-1791844588959",
+          "role": "user",
+          "content": "Explain hemoglobin in two playful lines, then explain its medical importance in simple English.",
+          "timestamp": "04:06 AM"
+        },
+        {
+          "id": "msg-1791844631382",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "04:07 AM"
+        },
+        {
+          "id": "msg-1791844755615",
+          "role": "user",
+          "content": "Explain what hemoglobin does in the human body in three simple sentences.",
+          "timestamp": "04:09 AM"
+        },
+        {
+          "id": "msg-1791845058134",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentences.",
+          "timestamp": "04:14 AM"
+        },
+        {
+          "id": "msg-resp-1791845058235",
+          "role": "assistant",
+          "content": "Offline Mode Active:\nI am operating via VerifiHealth's grounded local clinical engine.\n\nYour profile contains **4 clinical documents** (4 synthetic demonstration records; 3 clinically verified, 1 pending verification). All extracted parameters remain securely stored in your local browser sandbox.",
+          "timestamp": "04:14 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Offline Fail-Safe)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "Network unreachable. Client-side grounded fallback engaged."
+        },
+        {
+          "id": "msg-1791845262246",
+          "role": "user",
+          "content": "Explain hemoglobin in three simple sentences.",
+          "timestamp": "04:17 AM"
+        }
+      ]
+    },
+    {
+      "id": "chat-1791841661479-xx267",
+      "userId": "user-arjun",
+      "title": "💊 Are any medications prescribe",
+      "createdAt": "2026-10-12T21:47:41.479Z",
+      "updatedAt": "2026-10-12T21:47:43.952Z",
+      "messages": [
+        {
+          "id": "msg-1791841663936",
+          "role": "user",
+          "content": "💊 Are any medications prescribed in my records?",
+          "timestamp": "03:17 AM"
+        },
+        {
+          "id": "msg-resp-1791841663950",
+          "role": "assistant",
+          "content": "You currently do not have any prescription documents recorded in your active MediMentor timeline.\n\n• Grounded Finding: Zero active pharmaceutical regimens are cataloged for your profile.\n• Next Step: You can upload physical prescriptions via the Upload Medical Records tab to extract verified dosing schedules and enable daily adherence tracking.\n\n*Note: VerifiHealth never prescribes medications or suggests altering dosage without physician authorization.*",
+          "timestamp": "03:17 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Local Mode)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "No Gemini API key configured on server. Operating in local grounded mode.",
+          "citations": [],
+          "urgentCareWarning": false
+        }
+      ]
+    },
+    {
+      "id": "chat-1791841633320-rjksw",
+      "userId": "user-arjun",
+      "title": "heyy",
+      "createdAt": "2026-10-12T21:47:13.320Z",
+      "updatedAt": "2026-10-12T22:45:22.679Z",
+      "messages": [
+        {
+          "id": "msg-1791841638048",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "03:17 AM"
+        },
+        {
+          "id": "msg-resp-1791841638064",
+          "role": "assistant",
+          "content": "Hello Arjun K. Sharma! I am **VerifiHealth**, your grounded AI clinical copilot.\n\nYour active health profile currently contains **4 total medical documents** (3 verified, 4 synthetic demonstration records).\n\nKey Parameters in Your Profile:\n• Cardiovascular: Mild elevated total cholesterol (224 mg/dL) & LDL (142 mg/dL)\n• Glycemic: Pre-diabetic baseline with HbA1c at 6.1% and Fasting Blood Sugar at 112 mg/dL\n• Renal Reserve: Healthy Serum Creatinine (0.92 mg/dL) and normal filtration\n• Prescriptions: No prescriptions recorded\n\nHow can I assist you today? You can ask me to explain any test result, clarify medical terminology, compare reports, or prepare questions for your doctor.",
+          "timestamp": "03:17 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Local Mode)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "No Gemini API key configured on server. Operating in local grounded mode.",
+          "citations": [],
+          "urgentCareWarning": false
+        },
+        {
+          "id": "msg-1791841652151",
+          "role": "user",
+          "content": "i have a little bit hadache",
+          "timestamp": "03:17 AM"
+        },
+        {
+          "id": "msg-resp-1791841652162",
+          "role": "assistant",
+          "content": "Hello Arjun K. Sharma! I am **VerifiHealth**, your grounded AI clinical copilot.\n\nYour active health profile currently contains **4 total medical documents** (3 verified, 4 synthetic demonstration records).\n\nKey Parameters in Your Profile:\n• Cardiovascular: Mild elevated total cholesterol (224 mg/dL) & LDL (142 mg/dL)\n• Glycemic: Pre-diabetic baseline with HbA1c at 6.1% and Fasting Blood Sugar at 112 mg/dL\n• Renal Reserve: Healthy Serum Creatinine (0.92 mg/dL) and normal filtration\n• Prescriptions: No prescriptions recorded\n\nHow can I assist you today? You can ask me to explain any test result, clarify medical terminology, compare reports, or prepare questions for your doctor.",
+          "timestamp": "03:17 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Local Mode)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "No Gemini API key configured on server. Operating in local grounded mode.",
+          "citations": [],
+          "urgentCareWarning": false
+        },
+        {
+          "id": "msg-1791844607494",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "04:06 AM"
+        },
+        {
+          "id": "msg-1791844617262",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "04:06 AM"
+        },
+        {
+          "id": "msg-1791845106030",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "04:15 AM"
+        },
+        {
+          "id": "msg-1791845122590",
+          "role": "user",
+          "content": "heyy",
+          "timestamp": "04:15 AM"
+        },
+        {
+          "id": "msg-resp-1791845122670",
+          "role": "assistant",
+          "content": "Offline Mode Active:\nI am operating via VerifiHealth's grounded local clinical engine.\n\nYour profile contains **4 clinical documents** (4 synthetic demonstration records; 3 clinically verified, 1 pending verification). All extracted parameters remain securely stored in your local browser sandbox.",
+          "timestamp": "04:15 AM",
+          "modelName": "VerifiHealth Grounded Clinical Engine (Offline Fail-Safe)",
+          "isFallback": true,
+          "isRateLimitFallback": false,
+          "fallbackReason": "Network unreachable. Client-side grounded fallback engaged."
+        }
+      ]
+    }
+  ],
+  "patient-1": [
+    {
+      "id": "chat-1791847437632-9tqbi",
+      "userId": "patient-1",
+      "title": "Cardiovascular Health Plan 2026",
+      "createdAt": "2026-10-12T23:23:57.632Z",
+      "updatedAt": "2026-10-12T23:23:57.648Z",
+      "messages": [
+        {
+          "id": "msg-1",
+          "role": "user",
+          "content": "What are my cholesterol results?",
+          "timestamp": "2026-10-12T23:23:57.633Z"
+        },
+        {
+          "id": "msg-2",
+          "role": "assistant",
+          "content": "Your Total Cholesterol is 224 mg/dL.",
+          "timestamp": "2026-10-12T23:23:57.633Z",
+          "citations": [
+            {
+              "recordId": "mock-1",
+              "recordTitle": "Comprehensive Lipid Profile",
+              "metricOrFinding": "Total Cholesterol",
+              "value": "224 mg/dL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chat-1791842843265-da6lw",
+      "userId": "patient-1",
+      "title": "Cardiovascular Health Plan 2026",
+      "createdAt": "2026-10-12T22:07:23.265Z",
+      "updatedAt": "2026-10-12T22:07:23.288Z",
+      "messages": [
+        {
+          "id": "msg-1",
+          "role": "user",
+          "content": "What are my cholesterol results?",
+          "timestamp": "2026-10-12T22:07:23.267Z"
+        },
+        {
+          "id": "msg-2",
+          "role": "assistant",
+          "content": "Your Total Cholesterol is 224 mg/dL.",
+          "timestamp": "2026-10-12T22:07:23.267Z",
+          "citations": [
+            {
+              "recordId": "mock-1",
+              "recordTitle": "Comprehensive Lipid Profile",
+              "metricOrFinding": "Total Cholesterol",
+              "value": "224 mg/dL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chat-1791838661023-w7jem",
+      "userId": "patient-1",
+      "title": "Cardiovascular Health Plan 2026",
+      "createdAt": "2026-10-12T20:57:41.023Z",
+      "updatedAt": "2026-10-12T20:57:41.042Z",
+      "messages": [
+        {
+          "id": "msg-1",
+          "role": "user",
+          "content": "What are my cholesterol results?",
+          "timestamp": "2026-10-12T20:57:41.025Z"
+        },
+        {
+          "id": "msg-2",
+          "role": "assistant",
+          "content": "Your Total Cholesterol is 224 mg/dL.",
+          "timestamp": "2026-10-12T20:57:41.025Z",
+          "citations": [
+            {
+              "recordId": "mock-1",
+              "recordTitle": "Comprehensive Lipid Profile",
+              "metricOrFinding": "Total Cholesterol",
+              "value": "224 mg/dL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chat-1791838203821-isiqh",
+      "userId": "patient-1",
+      "title": "Cardiovascular Health Plan 2026",
+      "createdAt": "2026-10-12T20:50:03.821Z",
+      "updatedAt": "2026-10-12T20:50:03.837Z",
+      "messages": [
+        {
+          "id": "msg-1",
+          "role": "user",
+          "content": "What are my cholesterol results?",
+          "timestamp": "2026-10-12T20:50:03.822Z"
+        },
+        {
+          "id": "msg-2",
+          "role": "assistant",
+          "content": "Your Total Cholesterol is 224 mg/dL.",
+          "timestamp": "2026-10-12T20:50:03.822Z",
+          "citations": [
+            {
+              "recordId": "mock-1",
+              "recordTitle": "Comprehensive Lipid Profile",
+              "metricOrFinding": "Total Cholesterol",
+              "value": "224 mg/dL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chat-1791838078462-mfa1k",
+      "userId": "patient-1",
+      "title": "Cardiovascular Health Plan 2026",
+      "createdAt": "2026-10-12T20:47:58.462Z",
+      "updatedAt": "2026-10-12T20:47:58.490Z",
+      "messages": [
+        {
+          "id": "msg-1",
+          "role": "user",
+          "content": "What are my cholesterol results?",
+          "timestamp": "2026-10-12T20:47:58.466Z"
+        },
+        {
+          "id": "msg-2",
+          "role": "assistant",
+          "content": "Your Total Cholesterol is 224 mg/dL.",
+          "timestamp": "2026-10-12T20:47:58.466Z",
+          "citations": [
+            {
+              "recordId": "mock-1",
+              "recordTitle": "Comprehensive Lipid Profile",
+              "metricOrFinding": "Total Cholesterol",
+              "value": "224 mg/dL"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "patient-2": [
+    {
+      "id": "chat-1791857678202-yi407",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-13T02:14:38.202Z",
+      "updatedAt": "2026-10-13T02:14:38.221Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791847437634-f8we5",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T23:23:57.634Z",
+      "updatedAt": "2026-10-12T23:23:57.644Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791842843268-6amvo",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T22:07:23.268Z",
+      "updatedAt": "2026-10-12T22:07:23.287Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791841299535-szpgu",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T21:41:39.535Z",
+      "updatedAt": "2026-10-12T21:41:39.550Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791839096467-zgd15",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T21:04:56.467Z",
+      "updatedAt": "2026-10-12T21:04:56.480Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791838661026-asnf3",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T20:57:41.026Z",
+      "updatedAt": "2026-10-12T20:57:41.039Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791838203823-nl1s9",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T20:50:03.823Z",
+      "updatedAt": "2026-10-12T20:50:03.836Z",
+      "messages": []
+    },
+    {
+      "id": "chat-1791838078467-ur2fs",
+      "userId": "patient-2",
+      "title": "Eye Prescription Consult",
+      "createdAt": "2026-10-12T20:47:58.467Z",
+      "updatedAt": "2026-10-12T20:47:58.485Z",
+      "messages": []
+    }
+  ]
+}
