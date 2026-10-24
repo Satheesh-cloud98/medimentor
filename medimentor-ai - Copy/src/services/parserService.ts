@@ -45,6 +45,11 @@ export function parseSpecialtyDocument(
 
     case 'prescription':
       result.prescriptionData = parsePrescription(text);
+      if (result.prescriptionData.patientName) result.patientName = result.prescriptionData.patientName;
+      if (result.prescriptionData.patientAge) result.patientAge = result.prescriptionData.patientAge;
+      if (result.prescriptionData.patientGender) result.patientGender = result.prescriptionData.patientGender;
+      if (result.prescriptionData.prescriptionDate) result.documentDate = result.prescriptionData.prescriptionDate;
+      if (result.prescriptionData.hospitalOrClinic) result.facilityName = result.prescriptionData.hospitalOrClinic;
       break;
 
     case 'discharge_summary':
@@ -338,24 +343,106 @@ export function parseRadiologyReport(text: string): RadiologyReportData {
 
 /**
  * 5. Medication Prescription Extraction
+ * Extracts granular patient & clinical metadata and separated medicine fields.
  */
 export function parsePrescription(text: string): PrescriptionData {
   const data: PrescriptionData = { medications: [] };
 
-  // Doctor name
-  const docMatch = text.match(/(?:dr\.|doctor|physician|prescribed\s+by)\s*[:=]?\s*([A-Za-z.\s]{3,35})/i);
-  if (docMatch && docMatch[1]) {
-    data.doctorName = docMatch[1].trim();
+  const lines = text.split(/\r?\n/);
+
+  // 1. Patient Metadata
+  // Patient Name: strict match; avoid Dr, Clinic, Hospital, Age, Sex, UHID
+  const ptLine = lines.find((l) => /(?:patient(?:\s+name)?|pt\.?\s*name|^\s*name)\s*[:=]/i.test(l));
+  if (ptLine) {
+    const rawPt = ptLine.replace(/(?:patient(?:\s+name)?|pt\.?\s*name|^\s*name)\s*[:=]\s*/i, '');
+    const cleanPt = rawPt.split(/[|,;/]|\b(?:age|sex|gender|uhid|mrn|dr\.|date)\b/i)[0].trim();
+    if (cleanPt && !/^(?:dr\.?|hospital|clinic|doctor|patient|name)\b/i.test(cleanPt) && cleanPt.length >= 2) {
+      data.patientName = cleanPt;
+    }
   }
 
-  // Clinic / hospital
+  // Age: look for Age: 42 or 42 yrs or 42/M
+  const ageMatch = text.match(/\b(?:age|yr?s?\.?\s*old)\s*[:=]?\s*(\d{1,3})\s*(?:yrs|years|y|yo)?\b/i) ||
+                   text.match(/\b(\d{1,3})\s*(?:yrs|years|-year-old)\b/i) ||
+                   text.match(/(?:male|female|m|f)\s*[/|,]\s*(\d{1,3})\b/i) ||
+                   text.match(/\b(\d{1,3})\s*[/|,]\s*(?:male|female|m|f)\b/i);
+  if (ageMatch && ageMatch[1]) {
+    const ageNum = parseInt(ageMatch[1], 10);
+    if (ageNum > 0 && ageNum < 125) {
+      data.patientAge = `${ageNum}`;
+    }
+  }
+
+  // Gender / Sex
+  const genderMatch = text.match(/\b(?:gender|sex)\s*[:=]?\s*(male|female|other|m|f)\b/i) ||
+                      text.match(/\b(male|female)\b/i);
+  if (genderMatch && genderMatch[1]) {
+    const g = genderMatch[1].trim().toLowerCase();
+    if (g === 'm' || g === 'male') data.patientGender = 'Male';
+    else if (g === 'f' || g === 'female') data.patientGender = 'Female';
+    else data.patientGender = 'Other';
+  }
+
+  // Patient ID / UHID (strictly patient identifiers, never doctor registration numbers)
+  const uhidMatch = text.match(/\b(?:uhid|mrn|patient\s*(?:id|reg|no|uid)|pid|ipd\s*no\.?|opd\s*no\.?)\s*[:=]?\s*([A-Za-z0-9\-_/]{3,30})\b/i);
+  if (uhidMatch && uhidMatch[1]) {
+    data.patientUhid = uhidMatch[1].trim();
+  }
+
+  // Prescription Date
+  const dateMatch = text.match(/(?:date|prescribed\s+on|dated|rx\s+date)\s*[:=]?\s*(\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}\s+[A-Za-z]+\s+\d{4})/i);
+  if (dateMatch && dateMatch[1]) {
+    data.prescriptionDate = dateMatch[1].trim();
+  } else {
+    // Check top 6 lines for standard date format
+    for (let i = 0; i < Math.min(lines.length, 6); i++) {
+      const lineDate = lines[i].match(/\b(\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4})\b/);
+      if (lineDate && lineDate[1]) {
+        data.prescriptionDate = lineDate[1];
+        break;
+      }
+    }
+  }
+
+  // 2. Doctor & Facility Metadata
+  // Doctor Name
+  const docMatch = text.match(/(?:dr\.|doctor|physician|prescribed\s+by)\s*[:=]?\s*([A-Za-z.\s]{3,40})/i);
+  if (docMatch && docMatch[1]) {
+    let rawDoc = docMatch[1].trim();
+    // Separate qualifications from doctor name if on the same line
+    const qualInDoc = rawDoc.match(/,\s*([A-Za-z.,\s()]+)$/);
+    if (qualInDoc && qualInDoc[1]) {
+      data.doctorQualification = qualInDoc[1].trim();
+      rawDoc = rawDoc.replace(/,\s*[A-Za-z.,\s()]+$/, '').trim();
+    }
+    // Clean name
+    const cleanedDoc = rawDoc.replace(/^(?:dr\.?|doctor)\s*/i, '').trim();
+    data.doctorName = cleanedDoc ? `Dr. ${cleanedDoc}` : rawDoc;
+  }
+
+  // Doctor Qualification & Registration Number (single line only)
+  const qualMatch = text.match(/\b(MBBS|MD|MS|DNB|BAMS|BHMS|BDS|MDS|DM|MCh|FRCP|MRCP|MRCS|FRCS|Diploma|Fellowship)\b[^\n\r]*/i);
+  const regMatch = text.match(/\b(?:reg(?:istration)?\.?\s*(?:no\.?)?)\s*[:=]?\s*([A-Za-z0-9\-_/]+)\b/i);
+  if (!data.doctorQualification && qualMatch && qualMatch[0]) {
+    data.doctorQualification = qualMatch[0].trim().replace(/,\s*$/, '');
+  }
+  if (regMatch && regMatch[1]) {
+    const regStr = `Reg No: ${regMatch[1].trim()}`;
+    if (!data.doctorQualification) {
+      data.doctorQualification = regStr;
+    } else if (!data.doctorQualification.includes(regMatch[1].trim())) {
+      data.doctorQualification = `${data.doctorQualification} (${regStr})`;
+    }
+  }
+
+  // Clinic / Hospital
   const clinicMatch = text.match(/(?:clinic|hospital|centre|center|healthcare|pharmacy|polyclinic)\s*[:=]\s*([A-Za-z0-9&.,\s]{3,45})/i);
   if (clinicMatch && clinicMatch[1]) {
     const val = clinicMatch[1].trim();
     data.hospitalOrClinic = val;
     data.clinicOrHospital = val;
   } else {
-    const clinicLine = text.split(/\r?\n/).slice(0, 6).find((l) => /(?:hospital|clinic|polyclinic|dispensary|medical centre|health center)\b/i.test(l));
+    const clinicLine = lines.slice(0, 6).find((l) => /(?:hospital|clinic|polyclinic|dispensary|medical centre|health center)\b/i.test(l));
     if (clinicLine) {
       const cleaned = clinicLine.replace(/^(?:hospital|clinic|facility)\s*[:=]?\s*/i, '').trim();
       data.hospitalOrClinic = cleaned;
@@ -363,28 +450,41 @@ export function parsePrescription(text: string): PrescriptionData {
     }
   }
 
-  // Patient name
-  const ptMatch = text.match(/(?:patient(?:\s+name)?|name|pt\.?\s*name)\s*[:=]?\s*([A-Za-z.\s]{2,35})/i);
-  if (ptMatch && ptMatch[1]) {
-    data.patientName = ptMatch[1].trim();
-  }
+  // Hospital Address & Contact Details
+  const contactMatch = text.match(/(?:ph(?:one)?|tel|mob(?:ile)?|contact|call)\s*[:=]?\s*([+0-9\s\-()]{7,22})/i);
+  const emailMatch = text.match(/(?:email|mail)\s*[:=]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
+  const addressLine = lines.slice(0, 8).find((l) => /\b(?:street|road|nagar|cross|layout|floor|building|opp|near|pin(?:code)?\s*[:=]?\s*\d{5,6})\b/i.test(l));
 
-  // Date
-  const dateMatch = text.match(/(?:date|prescribed\s+on)\s*[:=]?\s*(\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}|\d{1,2}\s+[A-Za-z]+\s+\d{4})/i);
-  if (dateMatch && dateMatch[1]) {
-    data.prescriptionDate = dateMatch[1].trim();
+  const contactParts: string[] = [];
+  if (addressLine) contactParts.push(addressLine.trim());
+  if (contactMatch && contactMatch[1]) contactParts.push(`Phone: ${contactMatch[1].trim()}`);
+  if (emailMatch && emailMatch[1]) contactParts.push(`Email: ${emailMatch[1].trim()}`);
+  if (contactParts.length > 0) {
+    data.hospitalAddressContact = contactParts.join(' | ');
   }
 
   // Complaint or diagnosis
-  const complaintMatch = text.match(/(?:complaint|chief\s+complaint|diagnosis|impression|notes|clinical\s+notes)\s*[:=]?\s*([^\n\r]+)/i);
-  if (complaintMatch && complaintMatch[1]) {
-    data.complaintOrDiagnosis = complaintMatch[1].trim().slice(0, 150);
+  const complaintLineIdx = lines.findIndex((l) => /(?:complaint|chief\s+complaint|diagnosis|clinical\s+notes)\s*[:=]/i.test(l));
+  if (complaintLineIdx !== -1) {
+    const l = lines[complaintLineIdx];
+    let val = l.replace(/^[^:=]*[:=]\s*/i, '').trim();
+    val = val.replace(/^(?:chief\s+complaint|diagnosis|clinical\s+notes|notes)\s*[:=]?\s*/i, '').trim();
+    if (!val && lines[complaintLineIdx + 1] && !lines[complaintLineIdx + 1].includes(':')) {
+      val = lines[complaintLineIdx + 1].trim();
+    }
+    if (val) data.complaintOrDiagnosis = val.slice(0, 150);
   }
 
   // Advice or instructions
-  const adviceMatch = text.match(/(?:advice|instructions?|rx\s+advice|plan|precaution)\s*[:=]?\s*([^\n\r]+)/i);
-  if (adviceMatch && adviceMatch[1]) {
-    data.adviceOrInstructions = adviceMatch[1].trim().slice(0, 200);
+  const adviceLineIdx = lines.findIndex((l) => /(?:advice|instructions?|rx\s+advice|plan|precaution)\s*[:=]?$/i.test(l.trim()) || /(?:advice|instructions?|rx\s+advice|plan)\s*[:=]/i.test(l));
+  if (adviceLineIdx !== -1) {
+    const l = lines[adviceLineIdx];
+    let val = l.replace(/^[^:=]*[:=]\s*/i, '').trim();
+    val = val.replace(/^(?:instructions?|advice|plan)\s*[:=]?\s*/i, '').trim();
+    if (!val && lines[adviceLineIdx + 1] && !lines[adviceLineIdx + 1].includes(':')) {
+      val = lines[adviceLineIdx + 1].trim();
+    }
+    if (val) data.adviceOrInstructions = val.slice(0, 200);
   }
 
   // Check for explicit "Medication: Not specified" or "None"
@@ -396,41 +496,95 @@ export function parsePrescription(text: string): PrescriptionData {
     }
   }
 
-  // Extract individual medications from lines
-  const lines = text.split(/\r?\n/);
+  // 3. Extract individual medications with separated fields
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    // Skip headers and metadata lines
-    if (/patient|complaint|advice|purpose|demo|clinical notes|date|doctor|hospital|clinic/i.test(trimmed)) {
+    // Skip headers, facility metadata, and address lines
+    if (/patient|complaint|advice|purpose|demo|clinical notes|date|doctor|hospital|clinic|uhid|age|gender|road|street|nagar|floor|building|lane|avenue|marg|phone|email|contact/i.test(trimmed)) {
       continue;
     }
 
-    if (
+    const hasMedIndicator =
       /\b(?:tab|tablet|cap|capsule|syrup|suspension|inj|injection|gel|drops?|ointment|cream|inhaler)\b/i.test(trimmed) ||
-      /\b\d+\s*(?:mg|ml|mcg|g)\b/i.test(trimmed)
-    ) {
-      const freqMatch = trimmed.match(/\b(1-0-1|0-1-0|1-1-1|1-0-0|0-0-1|od|bd|tds|qid|bid|tid|daily|weekly|prn|sos|hs)\b/i);
-      const doseMatch = trimmed.match(/\b(\d+(?:\.\d+)?\s*(?:mg|ml|mcg|g|iu))\b/i);
-      const instrMatch = trimmed.match(/\b(?:before|after|with)\s+(?:food|meals)\b/i);
+      /\b\d+(?:\.\d+)?\s*(?:mg|ml|mcg|g|iu|puffs?)\b/i.test(trimmed);
 
+    if (hasMedIndicator) {
+      // Dosage Form
+      let dosageForm: string | undefined;
+      if (/\b(?:tab|tablet)s?\b/i.test(trimmed)) dosageForm = 'Tablet';
+      else if (/\b(?:cap|capsule)s?\b/i.test(trimmed)) dosageForm = 'Capsule';
+      else if (/\b(?:syp|syrup|suspension)\b/i.test(trimmed)) dosageForm = 'Syrup';
+      else if (/\b(?:inj|injection)s?\b/i.test(trimmed)) dosageForm = 'Injection';
+      else if (/\bdrops?\b/i.test(trimmed)) dosageForm = 'Drops';
+      else if (/\b(?:ointment|cream|gel)\b/i.test(trimmed)) dosageForm = 'Ointment';
+      else if (/\binhaler\b/i.test(trimmed)) dosageForm = 'Inhaler';
+
+      // Dosage
+      const doseMatch = trimmed.match(/\b(\d+(?:\.\d+)?\s*(?:mg|ml|mcg|g|iu|puffs?|drops?))\b/i);
+      const dosage = doseMatch && doseMatch[1] ? doseMatch[1].trim() : undefined;
+
+      // Frequency
+      const freqCodeMatch = trimmed.match(/\b(1-0-1|0-1-0|1-1-1|1-0-0|0-0-1|0-0-2|2-0-2|1-1-0|0-1-1|od|bd|bid|tds|tid|qid|daily|once\s+daily|twice\s+daily|thrice\s+daily|weekly|prn|sos|hs)\b/i);
+      let frequency = freqCodeMatch && freqCodeMatch[1] ? freqCodeMatch[1].toUpperCase() : undefined;
+      if (frequency === '1-0-1') frequency = '1-0-1 (Twice daily)';
+      else if (frequency === '1-1-1') frequency = '1-1-1 (Thrice daily)';
+      else if (frequency === '1-0-0') frequency = '1-0-0 (Morning once)';
+      else if (frequency === '0-0-1') frequency = '0-0-1 (Bedtime once)';
+      else if (frequency === 'OD') frequency = 'OD (Once daily)';
+      else if (frequency === 'BD' || frequency === 'BID') frequency = 'BD (Twice daily)';
+      else if (frequency === 'TDS' || frequency === 'TID') frequency = 'TDS (Thrice daily)';
+      else if (frequency === 'SOS' || frequency === 'PRN') frequency = 'SOS (As needed)';
+      else if (frequency === 'HS') frequency = 'HS (At bedtime)';
+
+      // Timing breakdown
+      let timing: string | undefined;
+      if (/1-0-1|twice\s+daily|bd|bid/i.test(trimmed)) timing = 'Morning & Night';
+      else if (/1-1-1|thrice\s+daily|tds|tid/i.test(trimmed)) timing = 'Morning, Noon & Night';
+      else if (/1-0-0|morning|breakfast/i.test(trimmed)) timing = 'Morning';
+      else if (/0-0-1|\bhs\b|bedtime|night|dinner/i.test(trimmed)) timing = 'Night / Bedtime';
+      else if (/0-1-0|noon|afternoon|lunch/i.test(trimmed)) timing = 'Noon';
+      else if (/\bsos\b|\bprn\b|as\s+needed/i.test(trimmed)) timing = 'As needed';
+      else if (/\bod\b|once\s+daily/i.test(trimmed)) timing = 'Morning';
+
+      // Food relation
+      let foodRelation: string | undefined;
+      if (/\b(?:before\s+(?:food|meals|breakfast)|empty\s+stomach)\b/i.test(trimmed)) {
+        foodRelation = 'Before food';
+      } else if (/\b(?:after\s+(?:food|meals|breakfast|dinner|lunch))\b/i.test(trimmed)) {
+        foodRelation = 'After food';
+      } else if (/\b(?:with\s+(?:food|meals))\b/i.test(trimmed)) {
+        foodRelation = 'With food';
+      }
+
+      // Duration
+      const durMatch = trimmed.match(/\b(?:for\s+)?(\d+\s*(?:days?|weeks?|months?))\b/i) ||
+                       trimmed.match(/\bx\s*(\d+\s*(?:days?|weeks?|months?))\b/i);
+      const duration = durMatch && durMatch[1] ? durMatch[1].trim() : undefined;
+
+      // Instructions
+      const instrMatch = trimmed.match(/\b(?:with\s+warm\s+water|do\s+not\s+crush|dissolve\s+in\s+water|apply\s+locally|rinse\s+mouth|shake\s+well)\b/i);
+      let instructions = instrMatch && instrMatch[0] ? instrMatch[0].trim() : undefined;
+      if (!instructions && foodRelation) {
+        instructions = foodRelation;
+      }
+
+      // Clean Medicine Name
       let cleanName = trimmed
         .replace(/^[0-9.)\-*•]+\s*/, '')
         .replace(/\b(?:tab|tablet|cap|capsule|syrup|suspension|inj|injection|gel|drops?|ointment|cream|inhaler)\b\.?\s*/gi, '')
         .replace(/^[0-9.)\-*•\s]+/, '')
         .trim();
 
-      if (doseMatch && doseMatch[1]) {
-        cleanName = cleanName.replace(doseMatch[1], '');
-      }
-      if (freqMatch && freqMatch[1]) {
-        cleanName = cleanName.replace(freqMatch[1], '');
-      }
-      if (instrMatch && instrMatch[0]) {
-        cleanName = cleanName.replace(instrMatch[0], '');
-      }
+      if (doseMatch && doseMatch[1]) cleanName = cleanName.replace(doseMatch[1], '');
+      if (freqCodeMatch && freqCodeMatch[1]) cleanName = cleanName.replace(freqCodeMatch[1], '');
+      if (durMatch && durMatch[0]) cleanName = cleanName.replace(durMatch[0], '');
+      if (foodRelation) cleanName = cleanName.replace(new RegExp(foodRelation, 'gi'), '');
+      if (instructions) cleanName = cleanName.replace(new RegExp(instructions, 'gi'), '');
+
       cleanName = cleanName
-        .replace(/\b(?:twice|once|thrice|daily|times|for|\d+\s*days?)\b/gi, '')
+        .replace(/\b(?:before|after|with)\s+(?:food|meals|breakfast|dinner|lunch|water)\b/gi, '')
+        .replace(/\b(?:twice|once|thrice|daily|times|for|days?|weeks?|months?|x|at\s+bedtime|bedtime|morning|night|noon|evening|afternoon)\b/gi, '')
         .replace(/[-–—:()]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
@@ -442,15 +596,38 @@ export function parsePrescription(text: string): PrescriptionData {
       data.medications.push({
         id: `med-${Date.now()}-${data.medications.length}`,
         name: finalName,
-        dosage: doseMatch && doseMatch[1] ? doseMatch[1] : undefined,
-        frequency: freqMatch && freqMatch[1] ? freqMatch[1].toUpperCase() : undefined,
-        instructions: instrMatch && instrMatch[0] ? instrMatch[0] : undefined,
+        dosage,
+        dosageForm,
+        form: dosageForm,
+        frequency,
+        timing,
+        foodRelation,
+        duration,
+        instructions,
+        verified: false,
       });
     }
   }
 
   if (data.medications.length === 0 && !data.medicationsNotes) {
     data.medicationsNotes = 'No specific medications detected in document';
+  }
+
+  // 4. Grounded Doctor Questions
+  if (data.medications.length > 0) {
+    data.doctorQuestions = [
+      'What is the expected timeframe for symptom improvement with this treatment plan?',
+      'Are there common side effects or adverse warning signs I should watch out for with my prescribed medication(s)?',
+      'Should any of these medications be taken with specific foods, and what should I do if I accidentally miss a scheduled dose?',
+      'When should I schedule my next clinical review or follow-up consultation?',
+    ];
+  } else {
+    data.doctorQuestions = [
+      'What is the clinical cause or underlying basis for the symptoms observed during this consultation?',
+      'Are there diagnostic laboratory tests or imaging evaluations recommended for further clarity?',
+      'What lifestyle modifications, dietary changes, or symptom monitoring steps should I adopt?',
+      'Under what circumstances or red-flag symptoms should I seek immediate in-person medical care?',
+    ];
   }
 
   return data;

@@ -14,6 +14,12 @@ import {
   Save,
   HelpCircle,
   ShieldCheck,
+  User,
+  Calendar,
+  Building2,
+  MapPin,
+  Pill,
+  Stethoscope,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useReports } from '../context/ReportsContext';
@@ -28,7 +34,9 @@ import type {
   DocumentClassificationResult,
   ExtractedDocumentData,
   AiExplanationResult,
+  PrescriptionMedication,
 } from '../types/document';
+import { PRESCRIPTION_FALLBACKS } from '../types/document';
 import type { MedicalReport } from '../types/report';
 
 export const UploadRecords: React.FC = () => {
@@ -1109,83 +1117,240 @@ Status: Normal haematological profile. Verified by Pathologist.`;
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl bg-teal-50/50 border border-teal-200">
                   <div className="flex items-center gap-2 font-bold text-sm text-teal-900 mb-1">
-                    <FileText className="w-5 h-5 text-teal-600" />
-                    <span>Clinical Prescription Details</span>
+                    <Pill className="w-5 h-5 text-teal-600" />
+                    <span>Clinical Prescription Details &amp; Field Separation</span>
                   </div>
                   <p className="text-xs text-teal-800">
-                    Extracted medical prescription details. Review and correct medications, clinical notes, and physician instructions before verification.
+                    Granular patient demographics, doctor qualification, facility address, separated medicine parameters, and consultation questions.
                   </p>
                 </div>
 
-                {/* Metadata Fields Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <label className="text-slate-500 font-semibold block mb-1">Prescribing Doctor</label>
-                    <input
-                      type="text"
-                      value={parsedData.prescriptionData.doctorName || ''}
-                      placeholder="Not found in document"
-                      onChange={(e) => {
-                        if (parsedData.prescriptionData) {
-                          setParsedData({
-                            ...parsedData,
-                            prescriptionData: { ...parsedData.prescriptionData, doctorName: e.target.value },
-                          });
-                        }
-                      }}
-                      className="w-full px-2 py-1 rounded border border-slate-300 font-bold bg-white text-slate-900"
-                    />
+                {/* PATIENT DEMOGRAPHICS & ID */}
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <User className="w-4 h-4 text-teal-600" />
+                      Patient Information (Isolated Fields)
+                    </span>
+                    <span className="text-[11px] text-slate-500">Strict Validation</span>
                   </div>
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <label className="text-slate-500 font-semibold block mb-1">Clinic / Hospital</label>
-                    <input
-                      type="text"
-                      value={parsedData.prescriptionData.hospitalOrClinic || ''}
-                      placeholder="Not found in document"
-                      onChange={(e) => {
-                        if (parsedData.prescriptionData) {
-                          setParsedData({
-                            ...parsedData,
-                            prescriptionData: { ...parsedData.prescriptionData, hospitalOrClinic: e.target.value },
-                          });
-                        }
-                      }}
-                      className="w-full px-2 py-1 rounded border border-slate-300 font-bold bg-white text-slate-900"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Patient Name</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.patientName || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.patientName}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, patientName: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.patientName && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.patientName}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Age</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.patientAge || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.patientAge}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, patientAge: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.patientAge && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.patientAge}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Gender</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.patientGender || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.patientGender}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, patientGender: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.patientGender && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.patientGender}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Patient ID / UHID</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.patientUhid || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.patientUhid}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, patientUhid: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.patientUhid && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.patientUhid}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1 flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-teal-600" />
+                        Prescription Date
+                      </label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.prescriptionDate || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.prescriptionDate}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, prescriptionDate: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.prescriptionDate && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.prescriptionDate}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <label className="text-slate-500 font-semibold block mb-1">Patient Name</label>
-                    <input
-                      type="text"
-                      value={parsedData.prescriptionData.patientName || parsedData.patientName || ''}
-                      placeholder="Not found in document"
-                      onChange={(e) => {
-                        if (parsedData.prescriptionData) {
-                          setParsedData({
-                            ...parsedData,
-                            prescriptionData: { ...parsedData.prescriptionData, patientName: e.target.value },
-                          });
-                        }
-                      }}
-                      className="w-full px-2 py-1 rounded border border-slate-300 font-bold bg-white text-slate-900"
-                    />
+                </div>
+
+                {/* DOCTOR & FACILITY */}
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Stethoscope className="w-4 h-4 text-teal-600" />
+                      Prescribing Physician &amp; Healthcare Facility
+                    </span>
+                    <span className="text-[11px] text-slate-500">Separated Credentials</span>
                   </div>
-                  <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                    <label className="text-slate-500 font-semibold block mb-1">Prescription Date</label>
-                    <input
-                      type="text"
-                      value={parsedData.prescriptionData.prescriptionDate || parsedData.documentDate || ''}
-                      placeholder="Not found in document"
-                      onChange={(e) => {
-                        if (parsedData.prescriptionData) {
-                          setParsedData({
-                            ...parsedData,
-                            prescriptionData: { ...parsedData.prescriptionData, prescriptionDate: e.target.value },
-                          });
-                        }
-                      }}
-                      className="w-full px-2 py-1 rounded border border-slate-300 font-bold bg-white text-slate-900"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Prescribing Doctor</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.doctorName || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.doctorName}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, doctorName: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.doctorName && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.doctorName}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1">Doctor Qualification / Reg No</label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.doctorQualification || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.doctorQualification}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: { ...parsedData.prescriptionData, doctorQualification: e.target.value },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.doctorQualification && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.doctorQualification}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1 flex items-center gap-1">
+                        <Building2 className="w-3 h-3 text-teal-600" />
+                        Hospital / Clinic Name
+                      </label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.hospitalOrClinic || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.hospitalOrClinic}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: {
+                                ...parsedData.prescriptionData,
+                                hospitalOrClinic: e.target.value,
+                                clinicOrHospital: e.target.value,
+                              },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.hospitalOrClinic && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.hospitalOrClinic}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-slate-500 font-semibold block mb-1 flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-teal-600" />
+                        Address &amp; Contact Details
+                      </label>
+                      <input
+                        type="text"
+                        value={parsedData.prescriptionData.hospitalAddressContact || ''}
+                        placeholder={PRESCRIPTION_FALLBACKS.hospitalAddressContact}
+                        onChange={(e) => {
+                          if (parsedData.prescriptionData) {
+                            setParsedData({
+                              ...parsedData,
+                              prescriptionData: {
+                                ...parsedData.prescriptionData,
+                                hospitalAddressContact: e.target.value,
+                              },
+                            });
+                          }
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 font-bold bg-white text-slate-900"
+                      />
+                      {!parsedData.prescriptionData.hospitalAddressContact && (
+                        <span className="text-[10px] text-amber-700 italic block mt-1">{PRESCRIPTION_FALLBACKS.hospitalAddressContact}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1231,23 +1396,30 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                 <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-extrabold text-sm text-slate-900">
-                        Prescribed Medications
+                      <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                        <Pill className="w-4 h-4 text-teal-600" />
+                        <span>Prescribed Medications ({parsedData.prescriptionData.medications.length})</span>
                       </h4>
                       <p className="text-xs text-slate-500">
-                        {parsedData.prescriptionData.medications.length} medication(s) identified
+                        Separated medicine name, dosage, form, frequency, timing, food relation, and duration
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => {
                         if (parsedData.prescriptionData) {
-                          const newMed = {
+                          const newMed: PrescriptionMedication = {
                             id: `med-${Date.now()}`,
                             name: '',
-                            dosage: '',
+                            dosage: '500mg',
+                            dosageForm: 'Tablet',
+                            form: 'Tablet',
                             frequency: '1-0-1',
-                            instructions: 'After food',
+                            timing: 'Morning & Night',
+                            foodRelation: 'After food',
+                            duration: '5 days',
+                            instructions: 'With warm water',
+                            verified: true,
                           };
                           setParsedData({
                             ...parsedData,
@@ -1278,20 +1450,24 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs">
+                      <table className="w-full text-left text-xs min-w-[760px]">
                         <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[11px]">
                           <tr>
-                            <th className="py-2.5 px-3">Medicine Name</th>
-                            <th className="py-2.5 px-3">Dosage</th>
-                            <th className="py-2.5 px-3">Frequency</th>
-                            <th className="py-2.5 px-3">Instructions</th>
-                            <th className="py-2.5 px-3 text-right">Actions</th>
+                            <th className="py-2.5 px-2.5">Medicine Name</th>
+                            <th className="py-2.5 px-2">Dosage</th>
+                            <th className="py-2.5 px-2">Form</th>
+                            <th className="py-2.5 px-2">Frequency</th>
+                            <th className="py-2.5 px-2">Timing</th>
+                            <th className="py-2.5 px-2">Food</th>
+                            <th className="py-2.5 px-2">Duration</th>
+                            <th className="py-2.5 px-2">Instructions</th>
+                            <th className="py-2.5 px-2 text-right">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                           {parsedData.prescriptionData.medications.map((med, mIdx) => (
                             <tr key={med.id || mIdx}>
-                              <td className="py-2 px-3">
+                              <td className="py-2 px-2.5">
                                 <input
                                   type="text"
                                   value={med.name}
@@ -1311,11 +1487,11 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                                   className="w-full px-2 py-1 rounded border border-slate-300 font-bold text-slate-900 bg-white"
                                 />
                               </td>
-                              <td className="py-2 px-3">
+                              <td className="py-2 px-2">
                                 <input
                                   type="text"
                                   value={med.dosage || ''}
-                                  placeholder="e.g. 500 mg"
+                                  placeholder="500mg"
                                   onChange={(e) => {
                                     if (parsedData.prescriptionData) {
                                       const updatedMeds = [...parsedData.prescriptionData.medications];
@@ -1328,14 +1504,35 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                                       }
                                     }
                                   }}
-                                  className="w-24 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                  className="w-20 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
                                 />
                               </td>
-                              <td className="py-2 px-3">
+                              <td className="py-2 px-2">
+                                <input
+                                  type="text"
+                                  value={med.dosageForm || med.form || ''}
+                                  placeholder="Tablet"
+                                  onChange={(e) => {
+                                    if (parsedData.prescriptionData) {
+                                      const updatedMeds = [...parsedData.prescriptionData.medications];
+                                      if (updatedMeds[mIdx]) {
+                                        updatedMeds[mIdx].dosageForm = e.target.value;
+                                        updatedMeds[mIdx].form = e.target.value;
+                                        setParsedData({
+                                          ...parsedData,
+                                          prescriptionData: { ...parsedData.prescriptionData, medications: updatedMeds },
+                                        });
+                                      }
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                />
+                              </td>
+                              <td className="py-2 px-2">
                                 <input
                                   type="text"
                                   value={med.frequency || ''}
-                                  placeholder="e.g. 1-0-1 or Daily"
+                                  placeholder="1-0-1"
                                   onChange={(e) => {
                                     if (parsedData.prescriptionData) {
                                       const updatedMeds = [...parsedData.prescriptionData.medications];
@@ -1348,14 +1545,74 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                                       }
                                     }
                                   }}
-                                  className="w-28 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                  className="w-24 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
                                 />
                               </td>
-                              <td className="py-2 px-3">
+                              <td className="py-2 px-2">
+                                <input
+                                  type="text"
+                                  value={med.timing || ''}
+                                  placeholder="Morning"
+                                  onChange={(e) => {
+                                    if (parsedData.prescriptionData) {
+                                      const updatedMeds = [...parsedData.prescriptionData.medications];
+                                      if (updatedMeds[mIdx]) {
+                                        updatedMeds[mIdx].timing = e.target.value;
+                                        setParsedData({
+                                          ...parsedData,
+                                          prescriptionData: { ...parsedData.prescriptionData, medications: updatedMeds },
+                                        });
+                                      }
+                                    }
+                                  }}
+                                  className="w-24 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                />
+                              </td>
+                              <td className="py-2 px-2">
+                                <input
+                                  type="text"
+                                  value={med.foodRelation || ''}
+                                  placeholder="After food"
+                                  onChange={(e) => {
+                                    if (parsedData.prescriptionData) {
+                                      const updatedMeds = [...parsedData.prescriptionData.medications];
+                                      if (updatedMeds[mIdx]) {
+                                        updatedMeds[mIdx].foodRelation = e.target.value;
+                                        setParsedData({
+                                          ...parsedData,
+                                          prescriptionData: { ...parsedData.prescriptionData, medications: updatedMeds },
+                                        });
+                                      }
+                                    }
+                                  }}
+                                  className="w-24 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                />
+                              </td>
+                              <td className="py-2 px-2">
+                                <input
+                                  type="text"
+                                  value={med.duration || ''}
+                                  placeholder="5 days"
+                                  onChange={(e) => {
+                                    if (parsedData.prescriptionData) {
+                                      const updatedMeds = [...parsedData.prescriptionData.medications];
+                                      if (updatedMeds[mIdx]) {
+                                        updatedMeds[mIdx].duration = e.target.value;
+                                        setParsedData({
+                                          ...parsedData,
+                                          prescriptionData: { ...parsedData.prescriptionData, medications: updatedMeds },
+                                        });
+                                      }
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                />
+                              </td>
+                              <td className="py-2 px-2">
                                 <input
                                   type="text"
                                   value={med.instructions || ''}
-                                  placeholder="e.g. After food"
+                                  placeholder="Instructions"
                                   onChange={(e) => {
                                     if (parsedData.prescriptionData) {
                                       const updatedMeds = [...parsedData.prescriptionData.medications];
@@ -1368,10 +1625,10 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                                       }
                                     }
                                   }}
-                                  className="w-full px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
+                                  className="w-28 px-2 py-1 rounded border border-slate-300 text-slate-900 bg-white"
                                 />
                               </td>
-                              <td className="py-2 px-3 text-right">
+                              <td className="py-2 px-2 text-right">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -1395,6 +1652,26 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                     </div>
                   )}
                 </div>
+
+                {/* DOCTOR CONSULTATION QUESTIONS PREVIEW */}
+                {parsedData.prescriptionData.doctorQuestions && parsedData.prescriptionData.doctorQuestions.length > 0 && (
+                  <div className="p-4 rounded-2xl bg-teal-50/50 border border-teal-200 space-y-2">
+                    <span className="text-xs font-bold text-teal-950 uppercase tracking-wider flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 text-teal-700" />
+                      Doctor Consultation Questions Preview (Grounded in Prescription)
+                    </span>
+                    <ul className="space-y-1.5 text-xs text-slate-700 pl-1">
+                      {parsedData.prescriptionData.doctorQuestions.map((q, idx) => (
+                        <li key={idx} className="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-teal-200/70">
+                          <span className="w-4 h-4 rounded-full bg-teal-100 text-teal-800 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">
+                            {idx + 1}
+                          </span>
+                          <span className="font-medium text-slate-800">{q}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1505,6 +1782,34 @@ Status: Normal haematological profile. Verified by Pathologist.`;
                   ))}
                 </ul>
               </div>
+
+              {/* Doctor Consultation Questions */}
+              {(aiResult.doctorQuestions || parsedData.prescriptionData?.doctorQuestions) && (
+                <div className="p-4 rounded-2xl bg-white border border-teal-200 shadow-2xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 text-teal-600" />
+                      Grounded Questions for Your Doctor Consultation
+                    </h4>
+                    <span className="text-[11px] font-semibold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-100">
+                      Grounded in Document
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Take these clinically targeted questions to your upcoming physician appointment:
+                  </p>
+                  <ul className="space-y-2 text-xs text-slate-700 pl-1">
+                    {(aiResult.doctorQuestions || parsedData.prescriptionData?.doctorQuestions || []).map((q, qIdx) => (
+                      <li key={qIdx} className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <span className="w-5 h-5 rounded-full bg-teal-100 text-teal-800 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                          {qIdx + 1}
+                        </span>
+                        <span className="font-medium text-slate-800">{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* AI Explanation OR Missing Key Advisory */}
               {aiResult.configured && aiResult.aiExplanation ? (

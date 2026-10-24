@@ -16,11 +16,19 @@ import {
   Trash2,
   FileText,
   Download,
+  User,
+  Calendar,
+  Building2,
+  MapPin,
+  HelpCircle,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useReports } from '../context/ReportsContext';
 import { DemoBadge } from '../components/DemoBadge';
 import { convertReportToFhirR4, downloadFhirBundle } from '../services/fhirService';
+import { PRESCRIPTION_FALLBACKS } from '../types/document';
 
 export const ReportVerification: React.FC = () => {
   const { t } = useLanguage();
@@ -40,6 +48,7 @@ export const ReportVerification: React.FC = () => {
   const [tempValue, setTempValue] = useState<string>('');
   const [savedToast, setSavedToast] = useState(false);
   const [showOriginalDoc, setShowOriginalDoc] = useState(false);
+  const [copiedQuestions, setCopiedQuestions] = useState(false);
 
   // Active report
   const activeReport =
@@ -104,6 +113,14 @@ export const ReportVerification: React.FC = () => {
         medications: currentMeds,
       },
     });
+  };
+
+  const handleCopyQuestions = (questions: string[]) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(questions.join('\n\n'));
+      setCopiedQuestions(true);
+      setTimeout(() => setCopiedQuestions(false), 2000);
+    }
   };
 
   const handleAddMedication = () => {
@@ -535,7 +552,7 @@ export const ReportVerification: React.FC = () => {
                   <span>Prescription &amp; Medication Regimen</span>
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Verify prescribing doctor, diagnosis notes, medications, dosages, and administration advice
+                  Granular patient metadata, prescribing credentials, isolated medicine fields, and clinical questions
                 </p>
               </div>
             </div>
@@ -554,45 +571,146 @@ export const ReportVerification: React.FC = () => {
             </div>
           </div>
 
-          {/* Clinical Metadata Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-600 flex items-center gap-1.5">
-                  <Stethoscope className="w-3.5 h-3.5 text-teal-600" />
-                  Prescribing Physician:
-                </span>
-                <span className="text-[11px] text-slate-400">Doctor</span>
-              </div>
-              <p className="font-extrabold text-slate-900 text-sm">
-                {activeReport.prescriptionData.doctorName || 'Not specified in document'}
-              </p>
-              <div className="pt-2 border-t border-slate-200/60">
-                <span className="text-slate-500 block mb-0.5">Clinic / Hospital:</span>
-                <p className="font-bold text-slate-800">
-                  {activeReport.prescriptionData.clinicOrHospital || 'Not specified in document'}
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-              <span className="font-bold text-slate-600 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-teal-600" />
-                Complaint / Diagnosis Notes:
+          {/* SECTION 1: STRICT PATIENT METADATA */}
+          <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <User className="w-4 h-4 text-teal-600" />
+                Patient Identification &amp; Demographics
               </span>
-              <p className="font-semibold text-slate-900 text-xs leading-relaxed bg-white p-2.5 rounded-xl border border-slate-200">
-                {activeReport.prescriptionData.complaintOrDiagnosis || 'Not specified in document'}
-              </p>
-              <div className="pt-2 border-t border-slate-200/60">
-                <span className="text-slate-500 block mb-0.5">Clinical Advice &amp; Instructions:</span>
-                <p className="font-medium text-slate-800 text-xs bg-white p-2 rounded-xl border border-slate-200">
-                  {activeReport.prescriptionData.adviceOrInstructions || 'Not specified in document'}
-                </p>
+              <span className="text-[11px] text-slate-500">Separated Clinical Fields</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Patient Name</span>
+                {activeReport.prescriptionData.patientName ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.patientName}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.patientName}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Age</span>
+                {activeReport.prescriptionData.patientAge ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.patientAge} years</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.patientAge}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Gender</span>
+                {activeReport.prescriptionData.patientGender ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.patientGender}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.patientGender}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Patient ID / UHID</span>
+                {activeReport.prescriptionData.patientUhid ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.patientUhid}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.patientUhid}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px] flex items-center gap-1">
+                  <Calendar className="w-3 h-3 text-teal-600" />
+                  Prescription Date
+                </span>
+                {activeReport.prescriptionData.prescriptionDate ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.prescriptionDate}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.prescriptionDate}</p>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Medications Table */}
+          {/* SECTION 2: DOCTOR & CLINICAL FACILITY */}
+          <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Stethoscope className="w-4 h-4 text-teal-600" />
+                Prescribing Physician &amp; Healthcare Facility
+              </span>
+              <span className="text-[11px] text-slate-500">Verified Credentials</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Prescribing Doctor</span>
+                {activeReport.prescriptionData.doctorName ? (
+                  <p className="font-extrabold text-slate-900">{activeReport.prescriptionData.doctorName}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.doctorName}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px]">Qualification / Reg No</span>
+                {activeReport.prescriptionData.doctorQualification ? (
+                  <p className="font-bold text-slate-800">{activeReport.prescriptionData.doctorQualification}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.doctorQualification}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px] flex items-center gap-1">
+                  <Building2 className="w-3 h-3 text-teal-600" />
+                  Hospital / Clinic Name
+                </span>
+                {activeReport.prescriptionData.clinicOrHospital || activeReport.prescriptionData.hospitalOrClinic ? (
+                  <p className="font-bold text-slate-800">
+                    {activeReport.prescriptionData.clinicOrHospital || activeReport.prescriptionData.hospitalOrClinic}
+                  </p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.hospitalOrClinic}</p>
+                )}
+              </div>
+
+              <div className="p-3 bg-white rounded-xl border border-slate-200 space-y-1">
+                <span className="text-slate-500 font-semibold block text-[11px] flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-teal-600" />
+                  Address &amp; Contact
+                </span>
+                {activeReport.prescriptionData.hospitalAddressContact ? (
+                  <p className="font-medium text-slate-800">{activeReport.prescriptionData.hospitalAddressContact}</p>
+                ) : (
+                  <p className="font-medium text-amber-700 italic text-[11px]">{PRESCRIPTION_FALLBACKS.hospitalAddressContact}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3: CLINICAL NOTES & ADVICE */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-teal-600" />
+                Complaint / Clinical Notes:
+              </span>
+              <p className="font-semibold text-slate-900 bg-white p-2.5 rounded-xl border border-slate-200">
+                {activeReport.prescriptionData.complaintOrDiagnosis || 'Not specified in document'}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
+              <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                <FileCheck className="w-3.5 h-3.5 text-teal-600" />
+                Doctor Advice &amp; Lifestyle Instructions:
+              </span>
+              <p className="font-medium text-slate-800 bg-white p-2.5 rounded-xl border border-slate-200">
+                {activeReport.prescriptionData.adviceOrInstructions || 'Not specified in document'}
+              </p>
+            </div>
+          </div>
+
+          {/* SECTION 4: PRESCRIBED MEDICATIONS TABLE (SEPARATED FIELDS) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
@@ -610,23 +728,27 @@ export const ReportVerification: React.FC = () => {
             </div>
 
             {activeReport.prescriptionData.medications.length === 0 ? (
-              <div className="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center text-xs text-slate-500 space-y-1">
-                <p className="font-semibold text-slate-700">No individual medications specified in document.</p>
-                <p className="text-[11px] text-slate-400">
-                  Note: {activeReport.prescriptionData.medicationsNotes || 'None recorded'}
+              <div className="p-5 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center text-xs text-slate-500 space-y-1">
+                <p className="font-bold text-slate-800">No pharmacological medications prescribed in this document.</p>
+                <p className="text-[11px] text-slate-500">
+                  Document Note: {activeReport.prescriptionData.medicationsNotes || 'None recorded'}
                 </p>
               </div>
             ) : (
               <div className="overflow-x-auto rounded-2xl border border-slate-200">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[760px]">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
                     <tr>
-                      <th className="py-2.5 px-3.5">Medicine Name</th>
-                      <th className="py-2.5 px-3">Dosage</th>
-                      <th className="py-2.5 px-3">Frequency</th>
-                      <th className="py-2.5 px-3">Instructions</th>
-                      <th className="py-2.5 px-3 text-center">Verification</th>
-                      <th className="py-2.5 px-3 text-right">Action</th>
+                      <th className="py-2.5 px-3">Medicine Name</th>
+                      <th className="py-2.5 px-2.5">Dosage</th>
+                      <th className="py-2.5 px-2.5">Form</th>
+                      <th className="py-2.5 px-2.5">Frequency</th>
+                      <th className="py-2.5 px-2.5">Timing</th>
+                      <th className="py-2.5 px-2.5">Food Relation</th>
+                      <th className="py-2.5 px-2.5">Duration</th>
+                      <th className="py-2.5 px-2.5">Instructions</th>
+                      <th className="py-2.5 px-2.5 text-center">Status</th>
+                      <th className="py-2.5 px-2 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -635,7 +757,7 @@ export const ReportVerification: React.FC = () => {
                         key={med.id || mIdx}
                         className={`hover:bg-slate-50/70 ${med.verified ? 'bg-emerald-50/20' : ''}`}
                       >
-                        <td className="py-2 px-3.5">
+                        <td className="py-2 px-2.5">
                           <input
                             type="text"
                             value={med.name}
@@ -643,45 +765,87 @@ export const ReportVerification: React.FC = () => {
                             className="w-full px-2 py-1 rounded border border-slate-200 font-bold text-slate-900 bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3">
+                        <td className="py-2 px-2">
                           <input
                             type="text"
-                            value={med.dosage}
+                            value={med.dosage || ''}
+                            placeholder="e.g. 500mg"
                             onChange={(e) => handleUpdateMedication(mIdx, 'dosage', e.target.value)}
-                            className="w-24 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                            className="w-20 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3">
+                        <td className="py-2 px-2">
                           <input
                             type="text"
-                            value={med.frequency}
+                            value={med.dosageForm || med.form || ''}
+                            placeholder="Tablet"
+                            onChange={(e) => {
+                              handleUpdateMedication(mIdx, 'dosageForm', e.target.value);
+                              handleUpdateMedication(mIdx, 'form', e.target.value);
+                            }}
+                            className="w-20 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={med.frequency || ''}
+                            placeholder="1-0-1"
                             onChange={(e) => handleUpdateMedication(mIdx, 'frequency', e.target.value)}
                             className="w-28 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3">
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={med.timing || ''}
+                            placeholder="Morning"
+                            onChange={(e) => handleUpdateMedication(mIdx, 'timing', e.target.value)}
+                            className="w-28 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={med.foodRelation || ''}
+                            placeholder="After food"
+                            onChange={(e) => handleUpdateMedication(mIdx, 'foodRelation', e.target.value)}
+                            className="w-24 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={med.duration || ''}
+                            placeholder="5 days"
+                            onChange={(e) => handleUpdateMedication(mIdx, 'duration', e.target.value)}
+                            className="w-20 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
                           <input
                             type="text"
                             value={med.instructions || ''}
+                            placeholder="With warm water"
                             onChange={(e) => handleUpdateMedication(mIdx, 'instructions', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
+                            className="w-32 px-2 py-1 rounded border border-slate-200 text-slate-800 bg-white"
                           />
                         </td>
-                        <td className="py-2 px-3 text-center">
+                        <td className="py-2 px-2 text-center">
                           <button
                             type="button"
                             onClick={() => handleToggleMedicationVerify(mIdx)}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold text-[11px] border transition-all cursor-pointer ${
+                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg font-bold text-[11px] border transition-all cursor-pointer ${
                               med.verified
                                 ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                                 : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-teal-50 hover:text-teal-800'
                             }`}
                           >
                             <CheckCircle2 className="w-3 h-3" />
-                            <span>{med.verified ? 'Verified' : 'Pending'}</span>
+                            <span>{med.verified ? 'Approved' : 'Verify'}</span>
                           </button>
                         </td>
-                        <td className="py-2 px-3 text-right">
+                        <td className="py-2 px-2 text-right">
                           <button
                             type="button"
                             onClick={() => handleRemoveMedication(mIdx)}
@@ -698,6 +862,64 @@ export const ReportVerification: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* SECTION 5: QUESTIONS FOR YOUR DOCTOR CONSULTATION */}
+          {((activeReport.prescriptionData.doctorQuestions && activeReport.prescriptionData.doctorQuestions.length > 0) ||
+            (activeReport.questionsForDoctor && activeReport.questionsForDoctor.length > 0)) && (
+            <div className="p-5 rounded-2xl bg-teal-50/50 border border-teal-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-teal-100 text-teal-800 rounded-lg">
+                    <HelpCircle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-teal-950 uppercase tracking-wider">
+                      Targeted Questions for Your Doctor Consultation
+                    </h4>
+                    <p className="text-[11px] text-teal-800">
+                      Clinically grounded in your verified prescription to review at your next physician appointment
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleCopyQuestions(
+                      activeReport.prescriptionData?.doctorQuestions || activeReport.questionsForDoctor || []
+                    )
+                  }
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-teal-800 border border-teal-300 hover:bg-teal-50 transition-colors shadow-2xs cursor-pointer self-start sm:self-auto"
+                >
+                  {copiedQuestions ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Copied Questions!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy Questions</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                {(
+                  activeReport.prescriptionData.doctorQuestions ||
+                  activeReport.questionsForDoctor ||
+                  []
+                ).map((q, idx) => (
+                  <div key={idx} className="flex items-start gap-2 bg-white p-3 rounded-xl border border-teal-200/80 shadow-2xs">
+                    <span className="w-5 h-5 rounded-full bg-teal-100 text-teal-800 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="text-xs font-medium text-slate-800 leading-relaxed">{q}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

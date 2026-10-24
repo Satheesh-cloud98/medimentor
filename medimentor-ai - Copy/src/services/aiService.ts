@@ -1,4 +1,5 @@
 import type { AiExplanationResult, ExtractedDocumentData } from '../types/document';
+import { PRESCRIPTION_FALLBACKS } from '../types/document';
 import type { SupportedLanguage } from '../types/language';
 
 /**
@@ -41,16 +42,31 @@ export function extractFactualBulletPoints(extractedData: ExtractedDocumentData)
 
   if (extractedData.prescriptionData) {
     const rx = extractedData.prescriptionData;
-    if (rx.doctorName) facts.push(`Prescribing Doctor: ${rx.doctorName}`);
-    if (rx.clinicOrHospital || rx.hospitalOrClinic) facts.push(`Clinic/Hospital: ${rx.clinicOrHospital || rx.hospitalOrClinic}`);
-    if (rx.complaintOrDiagnosis) facts.push(`Complaint / Clinical Notes: ${rx.complaintOrDiagnosis}`);
+    facts.push(`Patient Name: ${rx.patientName || PRESCRIPTION_FALLBACKS.patientName}`);
+    facts.push(`Age: ${rx.patientAge || PRESCRIPTION_FALLBACKS.patientAge}`);
+    facts.push(`Gender: ${rx.patientGender || PRESCRIPTION_FALLBACKS.patientGender}`);
+    facts.push(`Patient ID / UHID: ${rx.patientUhid || PRESCRIPTION_FALLBACKS.patientUhid}`);
+    facts.push(`Prescription Date: ${rx.prescriptionDate || PRESCRIPTION_FALLBACKS.prescriptionDate}`);
+    facts.push(`Prescribing Doctor: ${rx.doctorName || PRESCRIPTION_FALLBACKS.doctorName}`);
+    facts.push(`Doctor Qualification / Reg No: ${rx.doctorQualification || PRESCRIPTION_FALLBACKS.doctorQualification}`);
+    facts.push(`Hospital / Clinic: ${rx.hospitalOrClinic || rx.clinicOrHospital || PRESCRIPTION_FALLBACKS.hospitalOrClinic}`);
+    facts.push(`Hospital Address & Contact: ${rx.hospitalAddressContact || PRESCRIPTION_FALLBACKS.hospitalAddressContact}`);
+    if (rx.complaintOrDiagnosis) facts.push(`Complaint / Diagnosis: ${rx.complaintOrDiagnosis}`);
     if (rx.adviceOrInstructions) facts.push(`Doctor Advice: ${rx.adviceOrInstructions}`);
     if (rx.medications && rx.medications.length > 0) {
       for (const med of rx.medications) {
-        facts.push(`Medication: ${med.name} ${med.dosage || ''} (Frequency: ${med.frequency || 'N/A'}, Instructions: ${med.instructions || 'N/A'})`);
+        const parts = [`Medication: ${med.name}`];
+        if (med.dosage) parts.push(`Dosage: ${med.dosage}`);
+        if (med.dosageForm) parts.push(`Form: ${med.dosageForm}`);
+        if (med.frequency) parts.push(`Frequency: ${med.frequency}`);
+        if (med.timing) parts.push(`Timing: ${med.timing}`);
+        if (med.foodRelation) parts.push(`Food: ${med.foodRelation}`);
+        if (med.duration) parts.push(`Duration: ${med.duration}`);
+        if (med.instructions && med.instructions !== med.foodRelation) parts.push(`Instructions: ${med.instructions}`);
+        facts.push(parts.join(' | '));
       }
     } else {
-      facts.push(`Medications: ${rx.medicationsNotes || 'Not specified in document'}`);
+      facts.push(`Medications: ${rx.medicationsNotes || 'No specific medications detected in document'}`);
     }
   }
 
@@ -105,12 +121,24 @@ export async function requestAiExplanation(
     return {
       ...data,
       factsFromDocument: data.factsFromDocument?.length ? data.factsFromDocument : facts,
+      doctorQuestions: data.doctorQuestions || extractedData.prescriptionData?.doctorQuestions || [
+        'What is the expected timeframe for symptom improvement with this treatment plan?',
+        'Are there potential side effects or drug interactions I should monitor?',
+        'What should I do if a dose is accidentally missed or symptoms change?',
+        'When is my next clinical evaluation or follow-up recommended?',
+      ],
     };
   } catch (_err: any) {
     const fallbackFacts = facts.length > 0 ? facts : ['Clinical parameters recorded from document.'];
     return {
       configured: true,
       factsFromDocument: fallbackFacts,
+      doctorQuestions: extractedData.prescriptionData?.doctorQuestions || [
+        'What is the expected timeframe for symptom improvement with this treatment plan?',
+        'Are there potential side effects or drug interactions I should monitor?',
+        'What should I do if a dose is accidentally missed or symptoms change?',
+        'When is my next clinical evaluation or follow-up recommended?',
+      ],
       aiExplanation: `Clinical Record Overview:\nVerified document parameters:\n${fallbackFacts.map((f) => `• ${f}`).join('\n')}\n\nAll parameters have been cataloged for patient review and longitudinal tracking. Consult your primary healthcare provider for diagnostic interpretation.`,
       clinicalConsiderations: [
         'Review verified parameters with your healthcare provider.',

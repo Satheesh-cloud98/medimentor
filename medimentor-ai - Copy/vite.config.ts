@@ -23,6 +23,7 @@ function generateGroundedClinicalSynthesis(
   aiExplanation: string;
   clinicalConsiderations: string[];
   uncertainties: string[];
+  doctorQuestions: string[];
 } {
   const factsList = Array.isArray(facts) ? facts : [];
   const abnormalFacts = factsList.filter((f) =>
@@ -31,6 +32,7 @@ function generateGroundedClinicalSynthesis(
 
   let explanation = '';
   const considerations: string[] = [];
+  let doctorQuestions: string[] = [];
   const uncertainties: string[] = [
     'This clinical synthesis was generated using MediMentor AI\'s grounded clinical knowledge engine based strictly on verified parameters in your uploaded document.',
     'Educational assistance only; this does not constitute a formal diagnosis or prescription. Always consult your attending physician with the original diagnostic record.',
@@ -114,7 +116,7 @@ function generateGroundedClinicalSynthesis(
 
     case 'prescription': {
       // Check if medications are explicitly present and non-empty
-      const hasMedications = factsList.some((f) => {
+      const medFacts = factsList.filter((f) => {
         const lower = f.toLowerCase();
         if (lower.startsWith('medication:') || lower.startsWith('medications:')) {
           const val = lower.replace(/^medications?:\s*/, '').trim();
@@ -132,6 +134,8 @@ function generateGroundedClinicalSynthesis(
         return false;
       });
 
+      const hasMedications = medFacts.length > 0;
+
       if (!hasMedications) {
         explanation = `Clinical Consultation Note — No Pharmacological Medications Prescribed:\n` +
           `This document records a clinical evaluation or consultation note; NO medications, drugs, or therapeutic dosages were prescribed in this record:\n\n` +
@@ -142,16 +146,65 @@ function generateGroundedClinicalSynthesis(
         considerations.push('No prescription medications or therapeutic dosages were prescribed in this document.');
         considerations.push('Follow any clinical lifestyle, hydration, or observational guidance noted by the clinician.');
         considerations.push('Seek in-person consultation with a qualified medical professional if symptoms persist or worsen.');
-      } else {
-        explanation = `Clinical Prescription & Therapy Guidance:\n` +
-          `This clinical prescription outlines therapeutic recommendations from your consulting physician:\n\n` +
-          factsList.map((f) => `• ${f}`).join('\n') + `\n\n` +
-          `• Adherence & Medical Guidance:\n` +
-          `Adhere strictly to verified medication timings and dosages specified by your doctor. Complete prescribed courses as directed. Never discontinue or alter prescription dosages without prior professional medical consultation.`;
 
+        doctorQuestions = [
+          'What is the clinical cause or underlying basis for the symptoms observed during this consultation?',
+          'Are there diagnostic laboratory tests or imaging evaluations recommended for further clarity?',
+          'What lifestyle modifications, dietary changes, or symptom monitoring steps should I adopt?',
+          'Under what circumstances or red-flag symptoms should I seek immediate in-person medical care?',
+        ];
+      } else {
+        const mechanismLines: string[] = [];
+        const fullMedText = medFacts.join(' ').toLowerCase();
+
+        if (/paracetamol|acetaminophen/i.test(fullMedText)) {
+          mechanismLines.push('Paracetamol: Acts centrally as an antipyretic and analgesic by inhibiting prostaglandin synthesis, providing effective reduction of fever and pain relief.');
+        }
+        if (/ibuprofen|diclofenac|naproxen|aceclofenac/i.test(fullMedText)) {
+          mechanismLines.push('Non-Steroidal Anti-Inflammatory (NSAID): Inhibits cyclooxygenase (COX-1/COX-2) enzymes to suppress inflammatory prostaglandins, alleviating pain, localized swelling, and inflammatory distress.');
+        }
+        if (/amoxicillin|azithromycin|ciprofloxacin|cefixime|doxycycline|augmentin|clav/i.test(fullMedText)) {
+          mechanismLines.push('Antimicrobial / Antibacterial: Targets bacterial cell wall synthesis or bacterial ribosome translation to eradicate bacterial pathogens. Adhering to the full prescribed course duration is vital to prevent antimicrobial resistance.');
+        }
+        if (/pantoprazole|omeprazole|rabeprazole|esomeprazole|ranitidine|famotidine/i.test(fullMedText)) {
+          mechanismLines.push('Acid Suppressant / Proton Pump Inhibitor (PPI): Selectively blocks gastric H+/K+ ATPase pumps in parietal cells, substantially reducing stomach acid secretion and preventing gastric mucosal irritation.');
+        }
+        if (/metformin/i.test(fullMedText)) {
+          mechanismLines.push('Metformin (Biguanide): Lowers blood glucose by diminishing hepatic glucose production, reducing intestinal sugar absorption, and enhancing peripheral insulin receptor sensitivity.');
+        }
+        if (/amlodipine|telmisartan|losartan|atenolol|enalapril|ramipril/i.test(fullMedText)) {
+          mechanismLines.push('Antihypertensive / Cardiovascular Agent: Induces systemic peripheral vasodilation or inhibits renin-angiotensin-aldosterone signaling to normalize arterial blood pressure and lower cardiac afterload.');
+        }
+        if (/cetirizine|levocetirizine|fexofenadine|loratadine|montelukast/i.test(fullMedText)) {
+          mechanismLines.push('Antihistamine / Antiallergic: Competitively antagonizes peripheral histamine H1 receptors, rapidly relieving allergic symptoms including sneezing, rhinitis, urticaria, and pruritus.');
+        }
+        if (/calcium|vitamin|cholecalciferol|b12|iron|zinc|folic/i.test(fullMedText)) {
+          mechanismLines.push('Nutritional & Micronutrient Therapy: Replenishes essential physiological cofactors supporting erythropoiesis, neuromuscular conduction, cellular repair, and musculoskeletal strength.');
+        }
+
+        explanation = `Clinical Prescription & Therapeutic Guidance:\n` +
+          `This clinical prescription outlines therapeutic recommendations verified from your physician's order:\n\n` +
+          factsList.map((f) => `• ${f}`).join('\n') + `\n\n` +
+          `• Pharmacological & Therapeutic Mechanisms (Verified Regimen):\n` +
+          (mechanismLines.length > 0
+            ? mechanismLines.map((m) => `  - ${m}`).join('\n')
+            : `  - Prescribed pharmacotherapeutic agents have been cataloged with specific dosage, administration timing, and frequency as documented by your treating doctor.`) +
+          `\n\n• Clinical Adherence & Safety Guidelines:\n` +
+          `1. Adhere strictly to verified medication timings (e.g. before/after food, morning/night) and completion durations.\n` +
+          `2. Do NOT discontinue, alter, or share prescription medications without direct physician consultation.\n` +
+          `3. Report any hypersensitivity, unexpected rash, or adverse symptoms to your doctor immediately.`;
+
+        considerations.push('Take each medication at the precise scheduled intervals (e.g. before or after meals) as indicated.');
         considerations.push('Clarify any potential drug-drug interactions or side effects with your treating physician or pharmacist.');
         considerations.push('Keep an updated personal list of all active medications and known drug allergies.');
         considerations.push('Attend scheduled clinical follow-up as directed.');
+
+        doctorQuestions = [
+          'What is the expected timeframe for symptom improvement with my prescribed medication regimen?',
+          'Are there common side effects or adverse warning signs I should watch out for with my medication(s)?',
+          'Should any of these medications be taken with specific foods, and what should I do if I accidentally miss a scheduled dose?',
+          'When should I schedule my next clinical review or follow-up consultation?',
+        ];
       }
       break;
     }
@@ -189,6 +242,7 @@ function generateGroundedClinicalSynthesis(
     aiExplanation: explanation,
     clinicalConsiderations: considerations,
     uncertainties,
+    doctorQuestions,
   };
 }
 
@@ -285,7 +339,8 @@ CRITICAL CLINICAL GROUNDING & SAFETY GUIDELINES:
   "factsFromDocument": ["fact 1", "fact 2"],
   "aiExplanation": "Educational plain-language summary of what these parameters mean physiologically",
   "clinicalConsiderations": ["Key consideration 1", "Key consideration 2"],
-  "uncertainties": ["Explicit note that this is educational and requires physician review"]
+  "uncertainties": ["Explicit note that this is educational and requires physician review"],
+  "doctorQuestions": ["Question 1 to ask doctor", "Question 2 to ask doctor", "Question 3 to ask doctor", "Question 4 to ask doctor"]
 }`;
 
             const candidateModels = Array.from(
