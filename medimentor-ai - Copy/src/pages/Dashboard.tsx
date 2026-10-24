@@ -14,6 +14,11 @@ import {
   Pill,
   Bell,
   Check,
+  Calendar,
+  ShieldCheck,
+  GitCompare,
+  Share2,
+  Building2,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useReports } from '../context/ReportsContext';
@@ -343,6 +348,143 @@ export const Dashboard: React.FC = () => {
           </Link>
         </div>
       </div>
+      {/* Connected Care & Health Network Hub */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-teal-600" />
+              <span>Care Consultations & Health Network</span>
+            </h3>
+            <p className="text-xs text-slate-500">
+              National ABDM identity, longitudinal report comparisons, provider directory, and consent sharing.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <Link
+            to="/prescriptions"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+              <Pill className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  Prescription Regimens
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-teal-100 text-teal-800">4 Active</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Track morning/noon/night doses, durations, and refill schedules.
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/appointments"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  Care Appointments
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800">Telehealth</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Book in-person clinic visits and join secure video consultations.
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/government-schemes"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  ABHA & PM-JAY Schemes
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">₹5L Cover</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                14-digit ABDM ID card, linked facilities, and PM-JAY utilization.
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/compare"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+              <GitCompare className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  Report Comparison
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-purple-100 text-purple-800">Deltas</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Side-by-side longitudinal biomarker shifts and percentage deltas.
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/sharing"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+              <Share2 className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  Consent-Based Sharing
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800">Tokens</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Generate 24h/7d ephemeral tokens and review incoming access requests.
+              </p>
+            </div>
+          </Link>
+
+          <Link
+            to="/provider-portal"
+            className="group bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-teal-400 hover:shadow-xs transition-all flex items-start gap-3.5"
+          >
+            <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0 group-hover:bg-slate-700 group-hover:text-white transition-colors">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <h4 className="font-bold text-slate-900 text-xs group-hover:text-teal-700 transition-colors">
+                  Provider Registry & Verification
+                </h4>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700">NABH</span>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                Empaneled clinical directory, credential verification queue, and onboarding.
+              </p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
 
       {/* Key Biomarkers Spotlight */}
       <div>

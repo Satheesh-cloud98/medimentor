@@ -153,6 +153,24 @@ export const GovernmentSchemes: React.FC = () => {
                 </div>
               ))}
             </div>
+
+            <div className="mt-5 p-4 rounded-xl bg-teal-50/60 border border-teal-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div>
+                <p className="font-bold text-teal-900">Official National Health Authority (NHA) ABHA Gateway</p>
+                <p className="text-teal-800 mt-0.5">
+                  Manage Aadhaar KYC linkages, download your official PVC digital health card, and register new PHR addresses.
+                </p>
+              </div>
+              <a
+                href="https://abha.abdm.gov.in/"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-teal-700 text-white font-semibold hover:bg-teal-800 transition-colors shrink-0 shadow-2xs"
+              >
+                <span>Visit Official ABHA Portal</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
           </div>
         </div>
       )}

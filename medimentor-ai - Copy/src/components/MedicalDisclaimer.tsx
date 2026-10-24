@@ -40,7 +40,7 @@ export const MedicalDisclaimer: React.FC = () => {
             • Do not alter prescription dosages, discontinue treatments, or start new supplements based solely on this tool.
           </p>
           <p>
-            • In the event of acute medical discomfort or emergency symptoms, immediately contact local emergency services or visit the nearest emergency room.
+            • In the event of acute medical discomfort or emergency symptoms, immediately contact emergency services (112 in India / 911 / 108) or visit the nearest emergency department.
           </p>
         </div>
       )}
