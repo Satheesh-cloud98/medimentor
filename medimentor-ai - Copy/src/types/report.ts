@@ -64,4 +64,6 @@ export interface PatientProfile {
   emergencyContact: string;
   allergies: string;
   chronicConditions: string;
+  email?: string;
+  accountType?: 'patient' | 'provider';
 }

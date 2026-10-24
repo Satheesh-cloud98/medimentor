@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import { ReportsProvider } from './context/ReportsContext';
 import { Layout } from './components/Layout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { HomePage } from './pages/HomePage';
+import { Auth } from './pages/Auth';
 import { Dashboard } from './pages/Dashboard';
 import { UploadRecords } from './pages/UploadRecords';
 import { ReportVerification } from './pages/ReportVerification';
@@ -25,8 +28,32 @@ export function App() {
       <ReportsProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Dashboard />} />
+            {/* Public Landing Home Page */}
+            <Route path="/" element={<HomePage />} />
+
+            {/* Authentication & Account Creation Pages */}
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/sign-in" element={<Auth />} />
+            <Route path="/signin" element={<Auth />} />
+            <Route path="/create-account" element={<Auth />} />
+            <Route path="/register" element={<Auth />} />
+
+            {/* Provider Network & Clinical Facilities (Accessible without Patient Login) */}
+            <Route element={<Layout />}>
+              <Route path="provider-portal" element={<ProviderPortal />} />
+              <Route path="provider-portal/register" element={<ProviderPortal />} />
+              <Route path="provider-portal/verification" element={<ProviderPortal />} />
+            </Route>
+
+            {/* Protected Patient Clinical Health Portal */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="upload" element={<UploadRecords />} />
               <Route path="verify" element={<ReportVerification />} />
               <Route path="verify/:id" element={<ReportVerification />} />
@@ -42,9 +69,6 @@ export function App() {
               <Route path="network/exchange-demo" element={<FhirExchangeDemo />} />
               <Route path="network/audit-log" element={<AuditLog />} />
               <Route path="network/access-requests" element={<Sharing />} />
-              <Route path="provider-portal" element={<ProviderPortal />} />
-              <Route path="provider-portal/register" element={<ProviderPortal />} />
-              <Route path="provider-portal/verification" element={<ProviderPortal />} />
               <Route path="settings" element={<Settings />} />
 
               {/* Seamless Navigation Aliases & Redirects */}
@@ -54,11 +78,10 @@ export function App() {
               <Route path="report-comparison" element={<Navigate to="/compare" replace />} />
               <Route path="abha" element={<Navigate to="/government-schemes" replace />} />
               <Route path="pm-jay" element={<Navigate to="/government-schemes" replace />} />
-              <Route path="sign-in" element={<Navigate to="/settings" replace />} />
-              <Route path="signin" element={<Navigate to="/settings" replace />} />
-
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
+
+            {/* Fallback to Home */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
       </ReportsProvider>

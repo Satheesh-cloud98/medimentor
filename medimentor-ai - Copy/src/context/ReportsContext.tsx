@@ -33,6 +33,7 @@ interface ReportsContextType {
   profile: PatientProfile;
   availableProfiles: PatientProfile[];
   switchProfile: (profileId: string) => void;
+  registerProfile: (newProfile: PatientProfile) => void;
   updateProfile: (updates: Partial<PatientProfile>) => void;
   verifyMetric: (reportId: string, metricId: string, verified: boolean) => void;
   updateMetricValue: (reportId: string, metricId: string, value: string, notes?: string) => void;
@@ -59,7 +60,16 @@ export const ReportsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   });
 
-  const [availableProfiles] = useState<PatientProfile[]>(AVAILABLE_PATIENT_PROFILES);
+  const [availableProfiles, setAvailableProfiles] = useState<PatientProfile[]>(() => {
+    try {
+      const saved = localStorage.getItem('medimentor_available_profiles');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return AVAILABLE_PATIENT_PROFILES;
+  });
 
   const [profile, setProfile] = useState<PatientProfile>(() => {
     try {
@@ -150,6 +160,22 @@ export const ReportsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setReports([]);
       setActiveReportId('');
     }
+  };
+
+  const registerProfile = (newProfile: PatientProfile) => {
+    setAvailableProfiles((prev) => {
+      const exists = prev.find((p) => p.id === newProfile.id || (newProfile.email && p.email === newProfile.email));
+      if (exists) return prev;
+      const next = [...prev, newProfile];
+      try {
+        localStorage.setItem('medimentor_available_profiles', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    setActiveProfileId(newProfile.id);
+    setProfile(newProfile);
+    setReports([]);
+    setActiveReportId('');
   };
 
   const updateProfile = (updates: Partial<PatientProfile>) => {
@@ -279,6 +305,7 @@ export const ReportsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         profile,
         availableProfiles,
         switchProfile,
+        registerProfile,
         updateProfile,
         verifyMetric,
         updateMetricValue,

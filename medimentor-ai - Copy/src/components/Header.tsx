@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu }) => {
   }, []);
 
   const getPageTitle = () => {
-    if (location.pathname === '/') return t('navDashboard');
+    if (location.pathname === '/' || location.pathname === '/dashboard') return t('navDashboard');
     if (location.pathname.startsWith('/upload')) return t('navUpload');
     if (location.pathname.startsWith('/verify')) return t('navVerify');
     if (location.pathname.startsWith('/summary')) return t('navSummary');

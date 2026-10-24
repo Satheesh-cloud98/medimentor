@@ -9,6 +9,7 @@ export const INITIAL_PATIENT_PROFILE: PatientProfile = {
   emergencyContact: '+91 98765 43210',
   allergies: 'Penicillin (Mild urticaria)',
   chronicConditions: 'Mild Dyslipidemia, Family history of Type 2 Diabetes',
+  email: 'arjun.sharma@medimentor.ai',
 };
 
 export const AVAILABLE_PATIENT_PROFILES: PatientProfile[] = [
@@ -22,6 +23,7 @@ export const AVAILABLE_PATIENT_PROFILES: PatientProfile[] = [
     emergencyContact: '+91 98765 43211',
     allergies: 'Sulfa antibiotics',
     chronicConditions: 'Hypothyroidism (Controlled)',
+    email: 'priya.sharma@medimentor.ai',
   },
   {
     id: 'user-guest',
@@ -32,6 +34,7 @@ export const AVAILABLE_PATIENT_PROFILES: PatientProfile[] = [
     emergencyContact: '+91 91234 56789',
     allergies: 'None recorded',
     chronicConditions: 'None recorded',
+    email: 'guest@medimentor.ai',
   },
 ];
 

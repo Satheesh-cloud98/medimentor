@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
 
   const clinicalItems = [
     {
-      to: '/',
+      to: '/dashboard',
       label: t('navDashboard'),
       icon: LayoutDashboard,
       badge: null,
@@ -149,7 +149,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
           key={item.to}
           to={item.to}
           onClick={onCloseMobile}
-          end={item.to === '/'}
+          end={item.to === '/dashboard'}
           className={({ isActive }) =>
             `flex items-center justify-between px-3.5 py-2 rounded-xl font-medium text-xs transition-all ${
               isActive
@@ -200,7 +200,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
       >
         {/* Brand Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-          <NavLink to="/" onClick={onCloseMobile} className="flex items-center gap-3 group">
+          <NavLink to="/dashboard" onClick={onCloseMobile} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-600/20 group-hover:bg-teal-700 transition-colors">
               <HeartPulse className="w-5 h-5" />
             </div>
@@ -278,13 +278,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onCloseMobile }) =
             <span className="flex items-center gap-1 text-teal-700 font-medium">
               <Activity className="w-3 h-3" /> ABDM Linked
             </span>
-            <NavLink
-              to="/settings"
-              onClick={onCloseMobile}
-              className="hover:text-teal-700 font-medium transition-colors"
-            >
-              {t('edit')}
-            </NavLink>
+            <div className="flex items-center gap-1.5">
+              <NavLink
+                to="/settings"
+                onClick={onCloseMobile}
+                className="hover:text-teal-700 font-medium transition-colors"
+              >
+                {t('edit')}
+              </NavLink>
+              <span className="text-slate-300">&bull;</span>
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('medimentor_is_authenticated');
+                  window.location.href = '/';
+                }}
+                className="hover:text-rose-600 font-medium transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </aside>
