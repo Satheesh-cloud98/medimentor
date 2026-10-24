@@ -142,7 +142,7 @@ assert(partialParsed.hospitalAddressContact === undefined, 'Address & contact is
 assert(partialParsed.medications.length === 0, 'Medications list is empty when none prescribed');
 
 // Verify exact fallback texts match user specifications
-assert(PRESCRIPTION_FALLBACKS.patientName === 'Your name is not mentioned clearly in this prescription.', 'Fallback matches: patientName');
+assert(PRESCRIPTION_FALLBACKS.patientName === 'You are not mentioned clearly in this prescription.', 'Fallback matches: patientName');
 assert(PRESCRIPTION_FALLBACKS.patientAge === 'Age is not mentioned in this prescription.', 'Fallback matches: patientAge');
 assert(PRESCRIPTION_FALLBACKS.patientGender === 'Gender is not mentioned in this prescription.', 'Fallback matches: patientGender');
 assert(PRESCRIPTION_FALLBACKS.patientUhid === 'Patient ID / UHID is not mentioned in this prescription.', 'Fallback matches: patientUhid');

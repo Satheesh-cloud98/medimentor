@@ -48,7 +48,7 @@ export interface RadiologyReportData {
 }
 
 export const PRESCRIPTION_FALLBACKS = {
-  patientName: 'Your name is not mentioned clearly in this prescription.',
+  patientName: 'You are not mentioned clearly in this prescription.',
   patientAge: 'Age is not mentioned in this prescription.',
   patientGender: 'Gender is not mentioned in this prescription.',
   patientUhid: 'Patient ID / UHID is not mentioned in this prescription.',
