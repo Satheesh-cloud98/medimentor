@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Share2,
   ShieldCheck,
@@ -8,6 +9,9 @@ import {
   Copy,
   UserCheck,
   FileText,
+  Inbox,
+  Check,
+  X,
 } from 'lucide-react';
 import { MOCK_CONSENT_SHARES } from '../data/mockJourneyData';
 import type { ConsentShareItem } from '../types/journey';
@@ -15,10 +19,61 @@ import { useReports } from '../context/ReportsContext';
 import { useLanguage } from '../context/LanguageContext';
 import { DemoBadge } from '../components/DemoBadge';
 
+interface AccessRequest {
+  id: string;
+  requester: string;
+  organization: string;
+  role: string;
+  requestedRecords: string[];
+  purpose: string;
+  requestedDate: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+}
+
+const INITIAL_REQUESTS: AccessRequest[] = [
+  {
+    id: 'req-in-1',
+    requester: 'Dr. Anand Sharma, MD',
+    organization: 'Apex Care Cardiology Unit',
+    role: 'Attending Physician',
+    requestedRecords: ['Comprehensive Metabolic Panel', 'Complete Blood Count (CBC)'],
+    purpose: 'Longitudinal cardiac evaluation and medication dose titration',
+    requestedDate: '24 Oct 2026, 09:30 AM',
+    status: 'Pending',
+  },
+  {
+    id: 'req-in-2',
+    requester: 'Dr. Vikram Seth, MS',
+    organization: 'Metro Orthopedic Institute',
+    role: 'Orthopedic Surgeon',
+    requestedRecords: ['X-Ray / Radiology Imaging', 'Discharge Summary'],
+    purpose: 'Pre-procedure mobility review and past surgical history verification',
+    requestedDate: '22 Oct 2026, 02:15 PM',
+    status: 'Pending',
+  },
+  {
+    id: 'req-in-3',
+    requester: 'Claims Verification Cell',
+    organization: 'Star Health Allied Insurance TPA',
+    role: 'Insurance Verifier',
+    requestedRecords: ['Discharge Summary', 'Pharmacy Invoice'],
+    purpose: 'Cashless claim pre-authorization settlement (Policy #SH-89104)',
+    requestedDate: '20 Oct 2026, 11:00 AM',
+    status: 'Approved',
+  },
+];
+
 export const Sharing: React.FC = () => {
   const { t } = useLanguage();
+  const location = useLocation();
   const { reports } = useReports();
+
+  const [activeTab, setActiveTab] = useState<'grants' | 'requests'>(
+    location.pathname.includes('access-requests') ? 'requests' : 'grants'
+  );
+
   const [shares, setShares] = useState<ConsentShareItem[]>(MOCK_CONSENT_SHARES);
+  const [requests, setRequests] = useState<AccessRequest[]>(INITIAL_REQUESTS);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -58,11 +113,39 @@ export const Sharing: React.FC = () => {
     setShares(shares.map((s) => (s.id === id ? { ...s, status: 'revoked' as const } : s)));
   };
 
+  const handleApproveRequest = (req: AccessRequest) => {
+    const token = `SEC-${Math.floor(1000 + Math.random() * 9000)}-AUTH`;
+    const newShare: ConsentShareItem = {
+      id: `grant-${req.id}`,
+      recipient: `${req.requester} (${req.organization})`,
+      recipientRole: req.role,
+      purpose: req.purpose,
+      documents: req.requestedRecords,
+      validity: '7 Days',
+      createdAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      expiresAt: new Date(Date.now() + 7 * 86400000).toLocaleString('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+      status: 'active',
+      accessCode: token,
+    };
+
+    setRequests(requests.map((r) => (r.id === req.id ? { ...r, status: 'Approved' } : r)));
+    setShares([newShare, ...shares]);
+  };
+
+  const handleRejectRequest = (id: string) => {
+    setRequests(requests.map((r) => (r.id === id ? { ...r, status: 'Rejected' } : r)));
+  };
+
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 3000);
   };
+
+  const pendingRequestsCount = requests.filter((r) => r.status === 'Pending').length;
 
   return (
     <div className="space-y-6">
@@ -77,7 +160,7 @@ export const Sharing: React.FC = () => {
             <DemoBadge />
           </div>
           <p className="text-sm text-slate-500 mt-1">
-            Grant time-limited, encrypted access to chosen medical reports for second opinions or referral reviews.
+            Grant time-limited, encrypted access to chosen medical reports for second opinions or incoming provider requests.
           </p>
         </div>
 
@@ -102,88 +185,187 @@ export const Sharing: React.FC = () => {
         </div>
       </div>
 
-      {/* Active Shares List */}
-      <div className="space-y-4">
-        <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-          <span>Active & Historical Consent Grants</span>
-          <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-semibold">
-            {shares.length}
-          </span>
-        </h2>
+      {/* Tab Switcher */}
+      <div className="flex border-b border-slate-200 gap-6 text-sm font-semibold">
+        <button
+          onClick={() => setActiveTab('grants')}
+          className={`pb-3 transition-colors relative flex items-center gap-2 ${
+            activeTab === 'grants' ? 'text-teal-700 border-b-2 border-teal-600' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <UserCheck className="w-4 h-4" />
+          <span>Active & Historical Grants</span>
+          <span className="text-xs px-2 py-0.2 rounded-full bg-slate-100 text-slate-600">{shares.length}</span>
+        </button>
 
-        {shares.map((share) => (
-          <div
-            key={share.id}
-            className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-teal-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-teal-600" />
-                  {share.recipient}
-                </h3>
-                <span
-                  className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider ${
-                    share.status === 'active'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : share.status === 'revoked'
-                      ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                      : 'bg-slate-100 text-slate-600 border border-slate-200'
-                  }`}
-                >
-                  {share.status}
-                </span>
-                <span className="text-xs text-slate-400 font-mono">Token: {share.accessCode}</span>
-              </div>
+        <button
+          onClick={() => setActiveTab('requests')}
+          className={`pb-3 transition-colors relative flex items-center gap-2 ${
+            activeTab === 'requests' ? 'text-teal-700 border-b-2 border-teal-600' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Inbox className="w-4 h-4" />
+          <span>Incoming Access Requests</span>
+          {pendingRequestsCount > 0 && (
+            <span className="text-xs px-2 py-0.2 rounded-full bg-amber-100 text-amber-800 font-bold">
+              {pendingRequestsCount} Pending
+            </span>
+          )}
+        </button>
+      </div>
 
-              <p className="text-xs text-slate-600">
-                <strong>Purpose:</strong> {share.purpose}
-              </p>
+      {/* Tab Content: Active Grants */}
+      {activeTab === 'grants' && (
+        <div className="space-y-4">
+          {shares.map((share) => (
+            <div
+              key={share.id}
+              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-teal-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-slate-900 text-base flex items-center gap-1.5">
+                    <UserCheck className="w-4 h-4 text-teal-600" />
+                    {share.recipient}
+                  </h3>
+                  <span
+                    className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider ${
+                      share.status === 'active'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : share.status === 'revoked'
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                    }`}
+                  >
+                    {share.status}
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">Token: {share.accessCode}</span>
+                </div>
 
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Permitted Records ({share.documents.length}):</p>
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {share.documents.map((doc, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-200"
-                    >
-                      <FileText className="w-3 h-3 text-slate-500" />
-                      {doc}
-                    </span>
-                  ))}
+                <p className="text-xs text-slate-600">
+                  <strong>Purpose:</strong> {share.purpose}
+                </p>
+
+                <div>
+                  <p className="text-xs text-slate-500 font-medium">Permitted Records ({share.documents.length}):</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {share.documents.map((doc, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-200"
+                      >
+                        <FileText className="w-3 h-3 text-slate-500" />
+                        {doc}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-slate-400 pt-1">
+                  <span>Created: {share.createdAt}</span>
+                  <span>Expires: {share.expiresAt}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-slate-400 pt-1">
-                <span>Created: {share.createdAt}</span>
-                <span>Expires: {share.expiresAt}</span>
+              {/* Actions */}
+              <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
+                <button
+                  onClick={() => copyToClipboard(share.accessCode)}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{copiedCode === share.accessCode ? 'Copied Token!' : 'Copy Token'}</span>
+                </button>
+
+                {share.status === 'active' && (
+                  <button
+                    onClick={() => handleRevoke(share.id)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-medium transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Revoke</span>
+                  </button>
+                )}
               </div>
             </div>
+          ))}
+        </div>
+      )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-              <button
-                onClick={() => copyToClipboard(share.accessCode)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors"
-              >
-                <Copy className="w-3.5 h-3.5" />
-                <span>{copiedCode === share.accessCode ? 'Copied Token!' : 'Copy Token'}</span>
-              </button>
+      {/* Tab Content: Incoming Access Requests */}
+      {activeTab === 'requests' && (
+        <div className="space-y-4">
+          {requests.map((req) => (
+            <div
+              key={req.id}
+              className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-teal-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-slate-900 text-base">{req.requester}</h3>
+                  <span className="text-xs text-slate-500">({req.organization})</span>
+                  <span
+                    className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider ${
+                      req.status === 'Approved'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : req.status === 'Rejected'
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-amber-50 text-amber-800 border border-amber-200'
+                    }`}
+                  >
+                    {req.status}
+                  </span>
+                </div>
 
-              {share.status === 'active' && (
-                <button
-                  onClick={() => handleRevoke(share.id)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-medium transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Revoke</span>
-                </button>
-              )}
+                <p className="text-xs text-slate-600">
+                  <strong>Role:</strong> {req.role} • <strong>Clinical Purpose:</strong> {req.purpose}
+                </p>
+
+                <div>
+                  <p className="text-xs text-slate-500 font-medium">Requested Documents ({req.requestedRecords.length}):</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {req.requestedRecords.map((doc, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-200"
+                      >
+                        <FileText className="w-3 h-3 text-slate-500" />
+                        {doc}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-400 pt-1">Request Received: {req.requestedDate}</p>
+              </div>
+
+              {/* Action Buttons for Request */}
+              <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
+                {req.status === 'Pending' ? (
+                  <>
+                    <button
+                      onClick={() => handleApproveRequest(req)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition-all shadow-sm"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Approve & Grant</span>
+                    </button>
+                    <button
+                      onClick={() => handleRejectRequest(req.id)}
+                      className="flex items-center gap-1.5 px-3.5 py-2 border border-slate-300 text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300 rounded-lg text-xs font-semibold transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Reject</span>
+                    </button>
+                  </>
+                ) : (
+                  <span className="text-xs font-medium text-slate-400">Processed</span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Create Grant Modal */}
       {showCreateModal && (

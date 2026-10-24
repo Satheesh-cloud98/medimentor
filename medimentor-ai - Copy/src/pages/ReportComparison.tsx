@@ -5,6 +5,7 @@ import {
   TrendingDown,
   Minus,
   Info,
+  Download,
 } from 'lucide-react';
 import { useReports } from '../context/ReportsContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -28,6 +29,49 @@ export const ReportComparison: React.FC = () => {
     ])
   );
 
+  const exportComparisonJson = () => {
+    const payload = {
+      exportTimestamp: new Date().toISOString(),
+      reportA: {
+        id: reportA?.id,
+        title: reportA?.title,
+        date: reportA?.formattedDate || reportA?.date,
+        lab: reportA?.labName,
+      },
+      reportB: {
+        id: reportB?.id,
+        title: reportB?.title,
+        date: reportB?.formattedDate || reportB?.date,
+        lab: reportB?.labName,
+      },
+      biomarkerDeltas: allMetricNames.map((name) => {
+        const metricA = reportA?.metrics.find((m) => m.name === name);
+        const metricB = reportB?.metrics.find((m) => m.name === name);
+        const valA = metricA ? parseFloat(String(metricA.value).replace(/[^0-9.]/g, '')) : null;
+        const valB = metricB ? parseFloat(String(metricB.value).replace(/[^0-9.]/g, '')) : null;
+        const delta = valA !== null && valB !== null && !isNaN(valA) && !isNaN(valB) ? +(valB - valA).toFixed(2) : null;
+        return {
+          metricName: name,
+          unit: metricA?.unit || metricB?.unit,
+          reportAValue: metricA?.value ?? null,
+          reportAStatus: metricA?.status ?? null,
+          reportBValue: metricB?.value ?? null,
+          reportBStatus: metricB?.status ?? null,
+          delta,
+          normalRange: metricA?.referenceRange || metricB?.referenceRange,
+        };
+      }),
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `medimentor-biomarker-comparison-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -44,6 +88,14 @@ export const ReportComparison: React.FC = () => {
             Evaluate longitudinal biomarker changes between diagnostic tests over time.
           </p>
         </div>
+
+        <button
+          onClick={exportComparisonJson}
+          className="flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold transition-all shadow-sm self-start sm:self-auto"
+        >
+          <Download className="w-4 h-4" />
+          <span>Export Comparison (JSON)</span>
+        </button>
       </div>
 
       {/* Selectors Bar */}
@@ -88,7 +140,7 @@ export const ReportComparison: React.FC = () => {
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-xs font-bold uppercase tracking-wider">
-              Report A
+              Report A (Baseline)
             </span>
             <span className="text-xs text-slate-500">{reportA?.formattedDate || reportA?.date}</span>
           </div>
@@ -100,7 +152,7 @@ export const ReportComparison: React.FC = () => {
         <div className="bg-teal-50/50 border border-teal-200 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <span className="px-2 py-0.5 bg-teal-200 text-teal-800 rounded text-xs font-bold uppercase tracking-wider">
-              Report B
+              Report B (Follow-Up)
             </span>
             <span className="text-xs text-teal-700">{reportB?.formattedDate || reportB?.date}</span>
           </div>
@@ -136,8 +188,8 @@ export const ReportComparison: React.FC = () => {
                 const valA = metricA ? parseFloat(String(metricA.value).replace(/[^0-9.]/g, '')) : null;
                 const valB = metricB ? parseFloat(String(metricB.value).replace(/[^0-9.]/g, '')) : null;
 
-                let delta = null;
-                let deltaPercent = null;
+                let delta: number | null = null;
+                let deltaPercent: number | null = null;
                 if (valA !== null && valB !== null && !isNaN(valA) && !isNaN(valB) && valA !== 0) {
                   delta = +(valB - valA).toFixed(2);
                   deltaPercent = +(((valB - valA) / valA) * 100).toFixed(1);
