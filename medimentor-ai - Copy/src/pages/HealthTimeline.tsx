@@ -17,6 +17,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useReports, deduplicateReports } from '../context/ReportsContext';
 import { DemoBadge } from '../components/DemoBadge';
 import { convertReportToFhirR4, downloadFhirBundle } from '../services/fhirService';
+import { PRESCRIPTION_FALLBACKS } from '../types/document';
 
 export const HealthTimeline: React.FC = () => {
   const { t } = useLanguage();
@@ -513,10 +514,14 @@ export const HealthTimeline: React.FC = () => {
                   <>
                     {report.prescriptionData.doctorName ? (
                       <span className="text-xs text-slate-700 font-semibold">
-                        Dr. {report.prescriptionData.doctorName}
+                        {report.prescriptionData.doctorName.startsWith('Dr.')
+                          ? report.prescriptionData.doctorName
+                          : `Dr. ${report.prescriptionData.doctorName}`}
                       </span>
                     ) : (
-                      <span className="text-xs text-slate-400">Doctor not stated</span>
+                      <span className="text-xs text-amber-700 italic">
+                        {PRESCRIPTION_FALLBACKS.doctorName}
+                      </span>
                     )}
                     {(report.prescriptionData.medications || []).map((med, idx) => (
                       <span
