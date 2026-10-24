@@ -9,6 +9,17 @@ export const gu: Translations = {
   navVerify: 'રિપોર્ટ ચકાસણી',
   navSummary: 'આરોગ્ય સારાંશ',
   navTimeline: 'આરોગ્ય સમયરેખા',
+  navChat: 'વેરિફાઇહેલ્થ AI',
+  navPrescriptions: 'પ્રિસ્ક્રિપ્શન્સ',
+  navAppointments: 'એપોઇન્ટમેન્ટ્સ',
+  navGovernmentSchemes: 'સરકારી યોજનાઓ (ABHA)',
+  navSharing: 'સંમતિ શેરિંગ',
+  navCompare: 'રિપોર્ટ સરખામણી',
+  navFhir: 'FHIR ધોરણો',
+  navFhirExchange: 'એક્સચેન્જ સિમ્યુલેટર',
+  navAuditLog: 'સુરક્ષા ઓડિટ',
+  navProviderPortal: 'પ્રોવાઇડર નેટવર્ક',
+
   navSettings: 'સેટિંગ્સ',
   // Common
   demoDataBadge: 'ડેમો ડેટા',

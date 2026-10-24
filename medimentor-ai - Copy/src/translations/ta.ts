@@ -9,6 +9,17 @@ export const ta: Translations = {
   navVerify: 'அறிக்கை சரிபார்ப்பு',
   navSummary: 'சுகாதார சுருக்கம்',
   navTimeline: 'சுகாதார காலவரிசை',
+  navChat: 'வெரிஃபைஹெல்த் AI',
+  navPrescriptions: 'மருந்துச்சீட்டுகள்',
+  navAppointments: 'சந்திப்பு முன்பதிவுகள்',
+  navGovernmentSchemes: 'அரசு திட்டங்கள் (ABHA)',
+  navSharing: 'ஒப்புதல் பகிர்வு',
+  navCompare: 'அறிக்கை ஒப்பீடு',
+  navFhir: 'FHIR தரநிலைகள்',
+  navFhirExchange: 'பரிமாற்ற மாதிரி',
+  navAuditLog: 'பாதுகாப்பு தணிக்கை',
+  navProviderPortal: 'சிகிச்சை வழங்குநர் நெட்வொர்க்',
+
   navSettings: 'அமைப்புகள்',
   // Common
   demoDataBadge: 'மாதிரி தரவு (DEMO)',

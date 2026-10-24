@@ -9,6 +9,17 @@ export const ml: Translations = {
   navVerify: 'റിപ്പോർട്ട് സ്ഥിരീകരണം',
   navSummary: 'ആരോഗ്യ സംഗ്രഹം',
   navTimeline: 'ആരോഗ്യ ടൈംലൈൻ',
+  navChat: 'വെരിഫൈഹെൽത്ത് AI',
+  navPrescriptions: 'പ്രിസ്ക്രിപ്ഷനുകൾ',
+  navAppointments: 'അപ്പോയിന്റ്മെന്റുകൾ',
+  navGovernmentSchemes: 'സർക്കാർ പദ്ധതികൾ (ABHA)',
+  navSharing: 'സമ്മതപത്ര പങ്കിടൽ',
+  navCompare: 'റിപ്പോർട്ട് താരതമ്യം',
+  navFhir: 'FHIR മാനദണ്ഡങ്ങൾ',
+  navFhirExchange: 'എക്സ്ചേഞ്ച് സിമുലേറ്റർ',
+  navAuditLog: 'സെക്യൂരിറ്റി ഓഡിറ്റ്',
+  navProviderPortal: 'പ്രൊവൈഡർ നെറ്റ്‌വർക്ക്',
+
   navSettings: 'ക്രമീകരണങ്ങൾ',
   // Common
   demoDataBadge: 'ഡെമോ ഡാറ്റ',

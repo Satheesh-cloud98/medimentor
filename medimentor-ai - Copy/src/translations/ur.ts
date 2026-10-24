@@ -9,6 +9,17 @@ export const ur: Translations = {
   navVerify: 'رپورٹ تصدیق',
   navSummary: 'صحت کا خلاصہ',
   navTimeline: 'ہیلتھ ٹائم لائن',
+  navChat: 'ویریفائی ہیلتھ AI',
+  navPrescriptions: 'نسخے اور ادویات',
+  navAppointments: 'ملاقات کے اوقات',
+  navGovernmentSchemes: 'سرکاری اسکیمیں (ABHA)',
+  navSharing: 'رضامندی اشتراک',
+  navCompare: 'رپورٹ موازنہ',
+  navFhir: 'FHIR معیارات',
+  navFhirExchange: 'ایکسچینج سیمولیٹر',
+  navAuditLog: 'سیکیورٹی آڈٹ',
+  navProviderPortal: 'فراہم کنندہ نیٹ ورک',
+
   navSettings: 'ترتیبات',
   // Common
   demoDataBadge: 'ڈیمو ڈیٹا',

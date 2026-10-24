@@ -9,6 +9,17 @@ export const mr: Translations = {
   navVerify: 'अहवाल पडताळणी',
   navSummary: 'आरोग्य सारांश',
   navTimeline: 'आरोग्य टाइमलाइन',
+  navChat: 'व्हेरीफायहेल्थ AI',
+  navPrescriptions: 'प्रिस्क्रिप्शन आणि औषधे',
+  navAppointments: 'अपॉइंटमेंट्स',
+  navGovernmentSchemes: 'शासकीय योजना (ABHA)',
+  navSharing: 'संमती शेअरिंग',
+  navCompare: 'अहवाल तुलना',
+  navFhir: 'FHIR मानके',
+  navFhirExchange: 'एक्सचेंज सिम्युलेटर',
+  navAuditLog: 'सुरक्षा ऑडिट',
+  navProviderPortal: 'प्रदाता नेटवर्क',
+
   navSettings: 'सेटिंग्ज',
   // Common
   demoDataBadge: 'डेमो डेटा',

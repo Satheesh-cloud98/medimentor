@@ -9,6 +9,17 @@ export const te: Translations = {
   navVerify: 'రిపోర్ట్ ధృవీకరణ',
   navSummary: 'ఆరోగ్య సారాంశం',
   navTimeline: 'ఆరోగ్య కాలక్రమం',
+  navChat: 'వెరిఫైహెల్త్ AI',
+  navPrescriptions: 'ప్రిస్క్రిప్షన్లు',
+  navAppointments: 'అపాయింట్‌మెంట్‌లు',
+  navGovernmentSchemes: 'ప్రభుత్వ పథకాలు (ABHA)',
+  navSharing: 'సమ్మతి భాగస్వామ్యం',
+  navCompare: 'నివేదిక పోలిక',
+  navFhir: 'FHIR ప్రమాణాలు',
+  navFhirExchange: 'ఎక్స్ఛేంజ్ సిమ్యులేటర్',
+  navAuditLog: 'సెక్యూరిటీ ఆడిట్',
+  navProviderPortal: 'ప్రొవైడర్ నెట్‌వర్క్',
+
   navSettings: 'సెట్టింగ్‌లు',
   // Common
   demoDataBadge: 'డెమో డేటా',

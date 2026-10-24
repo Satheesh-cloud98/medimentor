@@ -9,6 +9,17 @@ export const pa: Translations = {
   navVerify: 'ਰਿਪੋਰਟ ਤਸਦੀਕ',
   navSummary: 'ਸਿਹਤ ਸੰਖੇਪ',
   navTimeline: 'ਸਿਹਤ ਟਾਈਮਲਾਈਨ',
+  navChat: 'ਵੈਰੀਫਾਈਹੈਲਥ AI',
+  navPrescriptions: 'ਨੁਸਖ਼ੇ ਅਤੇ ਦਵਾਈਆਂ',
+  navAppointments: 'ਮੁਲਾਕਾਤਾਂ',
+  navGovernmentSchemes: 'ਸਰਕਾਰੀ ਸਕੀਮਾਂ (ABHA)',
+  navSharing: 'ਸਹਿਮਤੀ ਸਾਂਝਾਕਰਨ',
+  navCompare: 'ਰਿਪੋਰਟ ਤੁਲਨਾ',
+  navFhir: 'FHIR ਮਿਆਰ',
+  navFhirExchange: 'ਐਕਸਚੇਂਜ ਸਿਮੂਲੇਟਰ',
+  navAuditLog: 'ਸੁਰੱਖਿਆ ਆਡਿਟ',
+  navProviderPortal: 'ਪ੍ਰਦਾਤਾ ਨੈੱਟਵਰਕ',
+
   navSettings: 'ਸੈਟਿੰਗਾਂ',
   // Common
   demoDataBadge: 'ਡੈਮੋ ਡਾਟਾ',

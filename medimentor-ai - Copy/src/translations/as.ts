@@ -9,6 +9,17 @@ export const as: Translations = {
   navVerify: 'প্ৰতিবেদন সত্যাপন',
   navSummary: 'স্বাস্থ্য সাৰাংশ',
   navTimeline: 'স্বাস্থ্য সময়ৰেখা',
+  navChat: 'ভেৰিফাইহেল্থ AI',
+  navPrescriptions: 'প্ৰেছক্ৰিপশ্বন',
+  navAppointments: 'সাক্ষাৎকাৰ',
+  navGovernmentSchemes: 'চৰকাৰী আঁচনি (ABHA)',
+  navSharing: 'সন্মতি ভাগ-বতৰা',
+  navCompare: 'প্ৰতিবেদন তুলনা',
+  navFhir: 'FHIR মানদণ্ড',
+  navFhirExchange: 'বিনিময় অনুকৰণ',
+  navAuditLog: 'সুৰক্ষা নিৰীক্ষণ',
+  navProviderPortal: 'সেৱা প্ৰদানকাৰী নেটৱৰ্ক',
+
   navSettings: 'ছেটিংছ',
   // Common
   demoDataBadge: 'ডেমো ডেটা',

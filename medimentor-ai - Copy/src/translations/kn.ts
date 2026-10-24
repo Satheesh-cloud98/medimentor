@@ -9,6 +9,17 @@ export const kn: Translations = {
   navVerify: 'ವರದಿ ಪರಿಶೀಲನೆ',
   navSummary: 'ಆರೋಗ್ಯ ಸಾರಾಂಶ',
   navTimeline: 'ಆರೋಗ್ಯ ಟೈಮ್‌ಲೈನ್',
+  navChat: 'ವೆರಿಫೈಹೆಲ್ತ್ AI',
+  navPrescriptions: 'ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್‌ಗಳು',
+  navAppointments: 'ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್‌ಗಳು',
+  navGovernmentSchemes: 'ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು (ABHA)',
+  navSharing: 'ಒಪ್ಪಿಗೆ ಹಂಚಿಕೆ',
+  navCompare: 'ವರದಿ ಹೋಲಿಕೆ',
+  navFhir: 'FHIR ಮಾನದಂಡಗಳು',
+  navFhirExchange: 'ಎಕ್ಸ್‌ಚೇಂಜ್ ಸಿಮ್ಯುಲೇಟರ್',
+  navAuditLog: 'ಭದ್ರತಾ ಆಡಿಟ್',
+  navProviderPortal: 'ಪೂರೈಕೆದಾರ ನೆಟ್‌ವರ್ಕ್',
+
   navSettings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
   // Common
   demoDataBadge: 'ಡೆಮೊ ಡೇಟಾ',
