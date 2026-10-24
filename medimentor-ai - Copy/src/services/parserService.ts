@@ -74,7 +74,7 @@ export function parseEyePrescription(text: string): EyePrescriptionData {
   // Find Pupillary Distance (PD / IPD)
   const pdMatch = text.match(/(?:p\.?d\.?|ipd|pupillary\s+dist(?:ance)?)(?:\s*\([^)]*\))?\s*[:=]?\s*(\d{2}(?:\.\d)?)(?:\s*mm)?/i);
   if (pdMatch && pdMatch[1]) {
-    data.pd = pdMatch[1].trim();
+    data.pd = pdMatch[0].toLowerCase().includes('mm') ? `${pdMatch[1].trim()} mm` : pdMatch[1].trim();
   }
 
   // Helper to extract SPH, CYL, AXIS, ADD, VA from a line

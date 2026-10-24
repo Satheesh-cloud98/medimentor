@@ -8,6 +8,15 @@ export interface Translations {
   navSummary: string;
   navTimeline: string;
   navChat?: string;
+  navPrescriptions?: string;
+  navAppointments?: string;
+  navGovernmentSchemes?: string;
+  navSharing?: string;
+  navCompare?: string;
+  navFhir?: string;
+  navFhirExchange?: string;
+  navAuditLog?: string;
+  navProviderPortal?: string;
   navSettings: string;
   // Common
   demoDataBadge: string;
